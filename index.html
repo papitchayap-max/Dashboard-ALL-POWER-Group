@@ -83,8 +83,8 @@ tbody td.grp-l { border-left: 1px solid #e5e5e3; }
         <th class="left" style="min-width:135px" data-col="po">ยอดรวม PO (ก่อน VAT) <span class="sort-arrow">↕</span></th>
         <th class="left" style="min-width:120px" data-col="item">Item <span class="sort-arrow">↕</span></th>
         <th style="min-width:55px"  data-col="order">Order <span class="sort-arrow">↕</span></th>
-        <th style="min-width:75px"  data-col="deposit" class="grp-l">ฝากของ (ชิ้น) <span class="sort-arrow">↕</span></th>
-        <th style="min-width:115px" data-col="depositVal">มูลค่าฝาก <span class="sort-arrow">↕</span></th>
+        <th style="min-width:75px"  data-col="deposit" class="grp-l">ของรอส่ง <span class="sort-arrow">↕</span></th>
+        <th style="min-width:115px" data-col="depositVal">มูลค่า <span class="sort-arrow">↕</span></th>
         <th style="min-width:55px"  data-col="inv" class="grp-l">INV <span class="sort-arrow">↕</span></th>
         <th style="min-width:55px"  data-col="remain">ตปท. <span class="sort-arrow">↕</span></th>
         <th style="min-width:80px"  data-col="status" class="grp-l">สถานะ <span class="sort-arrow">↕</span></th>
@@ -100,13 +100,14 @@ const raw = [
   {so:"SC-208618", po:2734800,    item:"DMG7000/M1",   order:110,  deposit:47,   depositVal:313960,    inv:63,   remain:0,    updated:false, salesco:"Papitchaya"},
   {so:"SC-209277", po:81055,      item:"SA1F34A275F",   order:5,    deposit:0,    depositVal:0,         inv:0,    remain:5,    updated:false, salesco:"Papitchaya"},
   {so:"SC-211915", po:2523500,    item:"DMR121",        order:230,  deposit:200,  depositVal:290000,    inv:0,    remain:30,   updated:false, salesco:"Papitchaya"},
+  {so:"SC-211915", po:2523500,    item:"DMG615",        order:300,  deposit:10,  depositVal:42000,    inv:290,    remain:0,   updated:false, salesco:"Papitchaya"},
+
   {so:"SC-212353", po:1087500,    item:"DMG800/M12",    order:150,  deposit:125,  depositVal:906250,    inv:25,   remain:0,    updated:false, salesco:"Jureemas"},
   {so:"SC-214374", po:44157,      item:"DM0T0050",      order:105,  deposit:0,    depositVal:0,         inv:30,   remain:75,   updated:false, salesco:"Papitchaya"},
   {so:"SC-214374", po:44157,      item:"DM0T0060",      order:12,   deposit:0,    depositVal:0,         inv:0,    remain:12,   updated:false, salesco:"Papitchaya"},
   {so:"SC-214374", po:44157,      item:"DM0T0080",      order:3,    deposit:0,    depositVal:0,         inv:0,    remain:3,    updated:false, salesco:"Papitchaya"},
   {so:"SC-214374", po:44157,      item:"DM0T0100",      order:3,    deposit:0,    depositVal:0,         inv:0,    remain:3,    updated:false, salesco:"Papitchaya"},
   {so:"SC-214428", po:2450000,    item:"DMG9000",       order:100,  deposit:93,   depositVal:2278500,   inv:7,    remain:0,    updated:false, salesco:"Patcharaporn"},
-  {so:"SC-214864", po:9960000,    item:"DMED121",       order:600,  deposit:13,   depositVal:40300,     inv:67,   remain:520,  updated:false, salesco:"Papitchaya"},
   {so:"SC-214864", po:9960000,    item:"DMG110",        order:2000, deposit:354,  depositVal:1433700,   inv:0,    remain:1646, updated:true,  salesco:"Papitchaya"},
   {so:"SC-214878", po:74400,      item:"DMT525-40-3",   order:24,   deposit:9,   depositVal:27900,     inv:12,    remain:3,    updated:false, salesco:"Papitchaya"},
   {so:"SC-214882", po:14355,      item:"GA063SAET6",    order:5,    deposit:0,    depositVal:0,         inv:0,    remain:5,    updated:false, salesco:"Papitchaya"},
