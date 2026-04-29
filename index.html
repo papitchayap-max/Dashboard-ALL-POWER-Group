@@ -1,64 +1,99 @@
 <!DOCTYPE html>
 <html lang="th">
+  <!-- lang="th" = ระบุว่าหน้านี้ใช้ภาษาไทย (ช่วย SEO + screen reader) -->
+
 <head>
 <meta charset="UTF-8" />
+<!-- UTF-8 = มาตรฐาน encoding ที่รองรับภาษาไทย/ทุกภาษา
+     ถ้าไม่ใส่ → ตัวอักษรอาจเพี้ยน เช่น กลายเป็น ??? -->
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<!-- ทำให้ responsive บนมือถือ
+     width=device-width = กว้างเท่าหน้าจอจริง
+     initial-scale=1.0 = ไม่ซูมเริ่มต้น -->
 <title>ALL POWER Group Dashboard</title>
+
 <style>
+
+  /* ================= GLOBAL RESET ================= */
 * { box-sizing: border-box; margin: 0; padding: 0; }
+
+/* ================= BODY ================= */
 body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #dbe9ee; color: #1a1a1a; padding: 1.5rem; font-size: 36px; }
 h2 { font-size: 22px; font-weight: 600; margin-bottom: 1rem; color: #1b4965; }
-.summary-grid { display: grid; grid-template-columns: repeat(5, minmax(0,1fr)); gap: 10px; margin-bottom: 1.5rem; }
+
+/* ================= KPI ================= */
+.summary-grid { display: grid; grid-template-columns: repeat(4, minmax(0,1fr)); gap: 10px; margin-bottom: 1.5rem; }
 .metric { background: #fff; border: 0.5px solid #e5e5e3; border-radius: 10px; padding: 12px 14px; }
 .metric-label { font-size: 16px; color: #1b4965; margin-bottom: 4px; font-weight: 700; }
 .metric-value { font-size: 25px; font-weight: 600; }
+/* สีสถานะ */
 .metric-value.c-abroad  { color: #bc4b51; }
 .metric-value.c-partial { color: #4a536b; }
 .metric-value.c-ready   { color: #4281a4; }
 
-.filters { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 1rem; align-items: center; }
+/* ================= FILTER ================= */
+.filters { display: flex; /* เรียงแนวนอน */gap: 8px; flex-wrap: wrap; /* ถ้าล้นให้ขึ้นบรรทัดใหม่ */ margin-bottom: 1rem; align-items: center; }
+/* input + select */
 .filters input, .filters select { font-size: 16px; padding: 6px 10px; border: 0.5px solid #ffe1a8; border-radius: 8px; background: #fff; color: #1b4965; font-weight: 700; }
 .filters input { width: 250px; }
+/* ตัวเลขแสดงจำนวน */
 #rowCount { margin-left: auto; font-size: 16px; color: #4a536b; font-weight: 600; }
-.tbl-wrap { overflow-x: auto; border: 0.5px solid #e5e5e3; border-radius: 12px; background: #fff; }
+
+/* ================= TABLE ================= */
+.tbl-wrap { overflow-x: auto;/*เลื่อนซ้ายขวาได้*/ border: 0.5px solid #e5e5e3; border-radius: 12px; background: #fff; }
 table { width: 100%; border-collapse: collapse; font-size: 16px; }
-thead th { background: #4a6fa5; color: #fff; font-weight: 500; padding: 9px 10px; text-align: right; white-space: nowrap; border-bottom: 0.5px solid #e5e5e3; cursor: pointer; user-select: none; }
+/* HEADER */
+thead th { background: #4a6fa5; color: #fff; font-weight: 500; padding: 9px 10px; text-align: right; white-space: nowrap; border-bottom: 0.5px solid #e5e5e3; cursor: pointer;/*ชี้แล้วเป็นมือ*/ user-select: none; }
 thead th.left { text-align: left; }
 thead th:hover { color: #faf0ca; }
+/* BODY */
 tbody tr { border-bottom: 0.5px solid #f0efeb; }
 tbody tr:last-child { border-bottom: none; }
 tbody tr:hover { background: #faf0ca; }
-td { padding: 8px 10px; text-align: right; color: #1a1a1a; white-space: nowrap; vertical-align: middle; }
+td { padding: 8px 15px; text-align: right; color: #1a1a1a; white-space: nowrap; vertical-align: middle; }
 td.left { text-align: left; }
-td.so { font-weight: 600; color: #1b4965; font-size: 16px; }
+/* ================= DATA STYLE ================= */
+td.so      { font-weight: 600; color: #1b4965; font-size: 16px; }
+td.po      { font-size: 16px; color: #1b4965; font-weight: 600; text-align: center; font-variant-numeric: tabular-nums; }
+td.item    { font-size: 16px; font-weight: 500; color: #1b4965; }
+td.num     { font-weight: 600; color: #1b4965; }
 td.salesco { font-weight: 500; font-size: 16px; color: #1b4965; }
-td.po { font-size: 16px; color: #1b4965; font-weight: 600; }
-td.item { font-size: 16px; font-weight: 500; color: #1b4965; }
-td.dim { color: #ccc; }
-td.num { font-weight: 600; color: #1b4965; }
+span.dim   { color: #ccc; }
 
-/* ฝากของ - qty + value stacked */
-.deposit-wrap { display: flex; flex-direction: column; align-items: flex-end; gap: 1px; }
-.deposit-qty { font-weight: 750; color: #bc4b51; }
-.deposit-val { font-size: 14px; color: #bc4b51; font-weight: 550; }
+/* ================= DEPOSIT ================= */
+.deposit-wrap-cell { display: inline-flex; align-items: center; gap: 5px; }
+.deposit-qty { font-weight: 700; color: #bc4b51; }
+.deposit-val { font-size: 16px; font-weight: 600; color: #bc4b51; }
 
+/* delta badge +N (เข้ามาใหม่) */
+.delta-in {
+  font-size: 12px; font-weight: 700;
+  color: #2d6a4f; background: #d8f3dc;
+  border-radius: 4px; padding: 1px 5px;
+  line-height: 1.5; letter-spacing: 0.02em;
+}
+
+/* ฝากของ */
+.stored-qty { font-weight: 700; color: #4a536b; }
+/* ================= BADGE ================= */
 .badge { display: inline-block; border-radius: 5px; font-size: 16px; font-weight: 500; padding: 2px 8px; letter-spacing: 0.02em; }
-.badge-ready   { background: #4281a4; color: #fff; }
-.badge-abroad  { background: #fe938c; color: #fff; }
-.badge-warn    { background: #9cafb7; color: #fff; }
-
+/* สี status */
+.badge-ready  { background: #4281a4; color: #fff; }
+.badge-abroad { background: #fe938c; color: #fff; }
+.badge-warn   { background: #9cafb7; color: #fff; }
+/* ================= SORT ICON ================= */
 .sort-arrow { font-size: 16px; margin-left: 5px; opacity: 0.4; }
 .sort-active .sort-arrow { opacity: 1; }
-.updated-dot { color: #bc4b51; margin-left: 10px; vertical-align: middle; }
-
-/* column group divider */
+/* เส้นแบ่ง group */
 thead th.grp-l { border-left: 2px solid rgba(255,255,255,0.25); }
 tbody td.grp-l { border-left: 1px solid #e5e5e3; }
 </style>
 </head>
 <body>
-<h2>ALL POWER Group Dashboard  - UPDATE 29-04-2026</h2>
+<h2>ALL POWER Group Dashboard — UPDATE 29-04-2026</h2>
+
 <div class="summary-grid" id="summaryGrid"></div>
+
 <div class="filters">
   <input type="text" id="searchInput" placeholder="ค้นหา SO / Item / Sales Co." />
   <select id="filterStatus">
@@ -75,18 +110,20 @@ tbody td.grp-l { border-left: 1px solid #e5e5e3; }
   </select>
   <span id="rowCount"></span>
 </div>
+
 <div class="tbl-wrap">
   <table>
     <thead>
       <tr>
         <th class="left" style="min-width:88px"  data-col="so">Sales Order <span class="sort-arrow">↕</span></th>
-        <th class="left" style="min-width:135px" data-col="po">ยอดรวม PO (ก่อน VAT) <span class="sort-arrow">↕</span></th>
+        <th style="min-width:145px; text-align:center" data-col="po">ยอดรวม PO (ก่อน VAT) <span class="sort-arrow">↕</span></th>
         <th class="left" style="min-width:120px" data-col="item">Item <span class="sort-arrow">↕</span></th>
         <th style="min-width:55px"  data-col="order">Order <span class="sort-arrow">↕</span></th>
-        <th style="min-width:75px"  data-col="deposit" class="grp-l">ของรอส่ง <span class="sort-arrow">↕</span></th>
+        <th style="min-width:90px"  data-col="deposit" class="grp-l">รอเปิด INV <span class="sort-arrow">↕</span></th>
         <th style="min-width:115px" data-col="depositVal">มูลค่า <span class="sort-arrow">↕</span></th>
         <th style="min-width:55px"  data-col="inv" class="grp-l">INV <span class="sort-arrow">↕</span></th>
-        <th style="min-width:55px"  data-col="remain">ตปท. <span class="sort-arrow">↕</span></th>
+        <th style="min-width:65px"  data-col="stored">ฝากของ <span class="sort-arrow">↕</span></th>
+        <th style="min-width:55px"  data-col="remain" class="grp-l">ตปท. <span class="sort-arrow">↕</span></th>
         <th style="min-width:80px"  data-col="status" class="grp-l">สถานะ <span class="sort-arrow">↕</span></th>
         <th class="left" style="min-width:90px" data-col="salesco">Sales Co. <span class="sort-arrow">↕</span></th>
       </tr>
@@ -96,58 +133,90 @@ tbody td.grp-l { border-left: 1px solid #e5e5e3; }
 </div>
 
 <script>
-const raw = [
-  {so:"SC-208618", po:2734800,    item:"DMG7000/M1",   order:110,  deposit:47,   depositVal:313960,    inv:63,   remain:0,    updated:false, salesco:"Papitchaya"},
-  {so:"SC-209277", po:81055,      item:"SA1F34A275F",   order:5,    deposit:0,    depositVal:0,         inv:0,    remain:5,    updated:false, salesco:"Papitchaya"},
-  {so:"SC-211915", po:2523500,    item:"DMR121",        order:230,  deposit:200,  depositVal:290000,    inv:0,    remain:30,   updated:false, salesco:"Papitchaya"},
-  {so:"SC-211915", po:2523500,    item:"DMG615",        order:300,  deposit:10,  depositVal:42000,    inv:290,    remain:0,   updated:false, salesco:"Papitchaya"},
 
-  {so:"SC-212353", po:1087500,    item:"DMG800/M12",    order:150,  deposit:125,  depositVal:906250,    inv:25,   remain:0,    updated:false, salesco:"Jureemas"},
-  {so:"SC-214374", po:44157,      item:"DM0T0050",      order:105,  deposit:0,    depositVal:0,         inv:30,   remain:75,   updated:false, salesco:"Papitchaya"},
-  {so:"SC-214374", po:44157,      item:"DM0T0060",      order:12,   deposit:0,    depositVal:0,         inv:0,    remain:12,   updated:false, salesco:"Papitchaya"},
-  {so:"SC-214374", po:44157,      item:"DM0T0080",      order:3,    deposit:0,    depositVal:0,         inv:0,    remain:3,    updated:false, salesco:"Papitchaya"},
-  {so:"SC-214374", po:44157,      item:"DM0T0100",      order:3,    deposit:0,    depositVal:0,         inv:0,    remain:3,    updated:false, salesco:"Papitchaya"},
-  {so:"SC-214428", po:2450000,    item:"DMG9000",       order:100,  deposit:93,   depositVal:2278500,   inv:7,    remain:0,    updated:false, salesco:"Patcharaporn"},
-  {so:"SC-214864", po:9960000,    item:"DMG110",        order:2000, deposit:354,  depositVal:1433700,   inv:0,    remain:1646, updated:true,  salesco:"Papitchaya"},
-  {so:"SC-214878", po:74400,      item:"DMT525-40-3",   order:24,   deposit:9,   depositVal:27900,     inv:12,    remain:3,    updated:false, salesco:"Papitchaya"},
-  {so:"SC-214882", po:14355,      item:"GA063SAET6",    order:5,    deposit:0,    depositVal:0,         inv:0,    remain:5,    updated:false, salesco:"Papitchaya"},
-  {so:"SC-214882", po:14355,      item:"GAX5001",       order:1,    deposit:0,    depositVal:0,         inv:0,    remain:1,    updated:false, salesco:"Papitchaya"},
-  {so:"SC-215045", po:5100000,    item:"DMG510",        order:800,  deposit:451,  depositVal:1127500,   inv:100,  remain:249,  updated:true,  salesco:"Patcharaporn"},
-  {so:"SC-215045", po:5100000,    item:"DMG615",        order:1000, deposit:112,  depositVal:347200,    inv:0,    remain:888,  updated:false, salesco:"Patcharaporn"},
-  {so:"SC-215127", po:213000,     item:"DCRL8",         order:30,   deposit:0,    depositVal:0,         inv:0,    remain:30,   updated:false, salesco:"Papitchaya"},
-  {so:"SC-215127", po:213000,     item:"EXP1006",       order:30,   deposit:0,    depositVal:0,         inv:0,    remain:30,   updated:false, salesco:"Papitchaya"},
-  {so:"SC-215358", po:12500,      item:"PAX2A000",      order:1,    deposit:1,    depositVal:12500,     inv:0,    remain:0,    updated:false, salesco:"Patcharaporn"},
-  {so:"SC-215433", po:1215,       item:"DM0T0050",      order:3,    deposit:0,    depositVal:0,         inv:0,    remain:3,    updated:false, salesco:"Patcharaporn"},
-  {so:"SC-215474", po:31590,      item:"DM0T0050",      order:69,   deposit:0,    depositVal:0,         inv:0,    remain:69,   updated:false, salesco:"Papitchaya"},
-  {so:"SC-215474", po:31590,      item:"DM0T0060",      order:3,    deposit:0,    depositVal:0,         inv:0,    remain:3,    updated:false, salesco:"Papitchaya"},
-  {so:"SC-215474", po:31590,      item:"DM0T0080",      order:3,    deposit:0,    depositVal:0,         inv:0,    remain:3,    updated:false, salesco:"Papitchaya"},
-  {so:"SC-215474", po:31590,      item:"DM0T0100",      order:3,    deposit:3,    depositVal:1215,      inv:0,    remain:0,    updated:false, salesco:"Papitchaya"},
-  {so:"SC-215476", po:74263.20,   item:"ATL610",        order:4,    deposit:4,    depositVal:74263.20,  inv:0,    remain:0,    updated:false, salesco:"Jureemas"},
-  {so:"SC-215486", po:177600,     item:"DMT400-50-3",   order:48,   deposit:31,   depositVal:114700,    inv:0,    remain:17,   updated:false, salesco:"Papitchaya"},
-  {so:"SC-215491", po:3660.80,    item:"GAZ016",        order:4,    deposit:0,    depositVal:0,         inv:3,    remain:1,    updated:false, salesco:"Patcharaporn"},
-  {so:"SC-215573", po:77780,      item:"GAZ016",        order:50,   deposit:0,    depositVal:0,         inv:0,    remain:50,   updated:false, salesco:"Papitchaya"},
-  {so:"SC-215573", po:77780,      item:"GAX1011A",      order:50,   deposit:0,    depositVal:0,         inv:0,    remain:50,   updated:false, salesco:"Papitchaya"},
-  {so:"SC-215573", po:77780,      item:"GAX1020A",      order:50,   deposit:0,    depositVal:0,         inv:0,    remain:50,   updated:false, salesco:"Papitchaya"},
-  {so:"SC-215671", po:9720,       item:"DM0T0050",      order:24,   deposit:0,    depositVal:0,         inv:0,    remain:24,   updated:false, salesco:"Jureemas"},
-  {so:"SC-216009", po:9300,       item:"DMT525-40-3",   order:3,    deposit:0,    depositVal:0,         inv:0,    remain:3,    updated:false, salesco:"Papitchaya"},
+/* ================= DATA ================= */
+/*  depositIn = จำนวนที่เพิ่งเข้ามาใหม่ในรอบนี้ (แสดงเป็น +N )
+    stored    = จำนวนชิ้นฝากไว้ที่โกดัง (คอลัมน์ใหม่ข้างๆ INV)  */
+const /* const = ตัวแปรค่าคงที่ (แก้ค่าไม่ได้) */
+ raw = [
+  {so:"SC-208618", po:2734800,  item:"DMG7000/M1",  order:110,  deposit:47,  depositVal:313960,   inv:63,  stored:0, remain:0,    depositIn:0,   salesco:"Papitchaya"},
+  {so:"SC-209277", po:81055,    item:"SA1F34A275F",  order:5,    deposit:0,   depositVal:0,        inv:0,   stored:0, remain:5,    depositIn:0,   salesco:"Papitchaya"},
+  {so:"SC-211915", po:2523500,  item:"DMR121",       order:230,  deposit:200, depositVal:290000,   inv:0,   stored:0, remain:30,   depositIn:0,   salesco:"Papitchaya"},
+  {so:"SC-211915", po:2523500,  item:"DMG615",       order:300,  deposit:10,  depositVal:42000,    inv:290, stored:0, remain:0,    depositIn:0,   salesco:"Papitchaya"},
+  {so:"SC-212353", po:1087500,  item:"DMG800/M12",   order:150,  deposit:125, depositVal:906250,   inv:25,  stored:0, remain:0,    depositIn:0,   salesco:"Jureemas"},
+  {so:"SC-214374", po:44157,    item:"DM0T0050",     order:105,  deposit:0,   depositVal:0,        inv:30,  stored:0, remain:75,   depositIn:0,   salesco:"Papitchaya"},
+  {so:"SC-214374", po:44157,    item:"DM0T0060",     order:12,   deposit:0,   depositVal:0,        inv:0,   stored:0, remain:12,   depositIn:0,   salesco:"Papitchaya"},
+  {so:"SC-214374", po:44157,    item:"DM0T0080",     order:3,    deposit:0,   depositVal:0,        inv:0,   stored:0, remain:3,    depositIn:0,   salesco:"Papitchaya"},
+  {so:"SC-214374", po:44157,    item:"DM0T0100",     order:3,    deposit:0,   depositVal:0,        inv:0,   stored:0, remain:3,    depositIn:0,   salesco:"Papitchaya"},
+  {so:"SC-214428", po:2450000,  item:"DMG9000",      order:100,  deposit:93,  depositVal:2278500,  inv:7,   stored:0, remain:0,    depositIn:0,   salesco:"Patcharaporn"},
+  {so:"SC-214864", po:9960000,  item:"DMG110",       order:2000, deposit:354, depositVal:1433700,  inv:0,   stored:0, remain:1646, depositIn:200,   salesco:"Papitchaya"},
+  {so:"SC-214878", po:74400,    item:"DMT525-40-3",  order:24,   deposit:9,   depositVal:27900,    inv:12,  stored:0, remain:3,    depositIn:0,   salesco:"Papitchaya"},
+  {so:"SC-214882", po:14355,    item:"GA063SAET6",   order:5,    deposit:0,   depositVal:0,        inv:0,   stored:0, remain:5,    depositIn:0,   salesco:"Papitchaya"},
+  {so:"SC-214882", po:14355,    item:"GAX5001",      order:1,    deposit:0,   depositVal:0,        inv:0,   stored:0, remain:1,    depositIn:0,   salesco:"Papitchaya"},
+  {so:"SC-215045", po:5100000,  item:"DMG510",       order:800,  deposit:451, depositVal:1127500,  inv:100, stored:0, remain:249,  depositIn:191, salesco:"Patcharaporn"},
+  {so:"SC-215045", po:5100000,  item:"DMG615",       order:1000, deposit:112, depositVal:347200,   inv:0,   stored:0, remain:888,  depositIn:0,   salesco:"Patcharaporn"},
+  {so:"SC-215127", po:213000,   item:"DCRL8",        order:30,   deposit:0,   depositVal:0,        inv:0,   stored:0, remain:30,   depositIn:0,   salesco:"Papitchaya"},
+  {so:"SC-215127", po:213000,   item:"EXP1006",      order:30,   deposit:0,   depositVal:0,        inv:0,   stored:0, remain:30,   depositIn:0,   salesco:"Papitchaya"},
+  {so:"SC-215358", po:12500,    item:"PAX2A000",     order:1,    deposit:1,   depositVal:12500,    inv:0,   stored:0, remain:0,    depositIn:0,   salesco:"Patcharaporn"},
+  {so:"SC-215433", po:1215,     item:"DM0T0050",     order:3,    deposit:0,   depositVal:0,        inv:0,   stored:0, remain:3,    depositIn:0,   salesco:"Patcharaporn"},
+  {so:"SC-215474", po:31590,    item:"DM0T0050",     order:69,   deposit:0,   depositVal:0,        inv:0,   stored:0, remain:69,   depositIn:0,   salesco:"Papitchaya"},
+  {so:"SC-215474", po:31590,    item:"DM0T0060",     order:3,    deposit:0,   depositVal:0,        inv:0,   stored:0, remain:3,    depositIn:0,   salesco:"Papitchaya"},
+  {so:"SC-215474", po:31590,    item:"DM0T0080",     order:3,    deposit:0,   depositVal:0,        inv:0,   stored:0, remain:3,    depositIn:0,   salesco:"Papitchaya"},
+  {so:"SC-215474", po:31590,    item:"DM0T0100",     order:3,    deposit:3,   depositVal:1215,     inv:0,   stored:0, remain:0,    depositIn:0,   salesco:"Papitchaya"},
+  {so:"SC-215476", po:74263.20, item:"ATL610",       order:4,    deposit:4,   depositVal:74263.20, inv:0,   stored:0, remain:0,    depositIn:0,   salesco:"Jureemas"},
+  {so:"SC-215486", po:177600,   item:"DMT400-50-3",  order:48,   deposit:31,  depositVal:114700,   inv:0,   stored:0, remain:17,   depositIn:0,   salesco:"Papitchaya"},
+  {so:"SC-215491", po:3660.80,  item:"GAZ016",       order:4,    deposit:0,   depositVal:0,        inv:3,   stored:0, remain:1,    depositIn:0,   salesco:"Patcharaporn"},
+  {so:"SC-215573", po:77780,    item:"GAZ016",       order:50,   deposit:0,   depositVal:0,        inv:0,   stored:0, remain:50,   depositIn:0,   salesco:"Papitchaya"},
+  {so:"SC-215573", po:77780,    item:"GAX1011A",     order:50,   deposit:0,   depositVal:0,        inv:0,   stored:0, remain:50,   depositIn:0,   salesco:"Papitchaya"},
+  {so:"SC-215573", po:77780,    item:"GAX1020A",     order:50,   deposit:0,   depositVal:0,        inv:0,   stored:0, remain:50,   depositIn:0,   salesco:"Papitchaya"},
+  {so:"SC-215671", po:9720,     item:"DM0T0050",     order:24,   deposit:0,   depositVal:0,        inv:0,   stored:0, remain:24,   depositIn:0,   salesco:"Jureemas"},
+  {so:"SC-216009", po:9300,     item:"DMT525-40-3",  order:3,    deposit:0,   depositVal:0,        inv:0,   stored:0, remain:3,    depositIn:0,   salesco:"Papitchaya"},
 ];
-
+/* ================= STATUS ================= */
+/* ฟังก์ชันคำนวณสถานะ */
 function getStatus(r) {
+  /* case 1: ตปท. */ /*  ความหมาย: ถ้า "ของทั้งหมดอยู่ต่างประเทศ" (remain = order) และยังไม่มี INV และยังไม่ deposit → สถานะ = abroad (ตปท.) */
   if (r.remain === r.order && r.inv === 0 && r.deposit === 0) return 'abroad';
+
+  /* case 2: พร้อมส่ง */  /*  ความหมาย: ถ้าฝากของครบแล้ว และยังไม่ออก INV → พร้อมส่ง */
   if (r.deposit >= r.order && r.inv === 0) return 'ready';
+
+  /* case 3: บางส่วน */ /* มี movement บางส่วน→ บางส่วน*/
   if (r.inv > 0 || r.deposit > 0 || r.remain > 0) return 'partial';
   return 'pending';
+
+ /* || = OR (มีเงื่อนไขใดเงื่อนไขหนึ่งเป็นจริงก็พอ)*/
 }
 
-let sortCol = 'so', sortDir = 1;
 
+
+
+/* ================= SORT ================= */
+let /* ตัวแปรที่เปลี่ยนค่าได้ */
+sortCol = 'deposit', /* default column */
+sortDir = -1;        /* -1 = มาก → น้อย  */
+
+/* ================= FORMAT ================= */
 function fmt(n)      { return (n != null && n !== 0) ? n.toLocaleString('th-TH') : '-'; }
-function fmtMoney(n) { return (n != null && n !== 0) ? n.toLocaleString('th-TH', {minimumFractionDigits:2, maximumFractionDigits:2}) : '-'; }
-function dash(n)     { return (n != null && n > 0)   ? `<span class="num">${fmt(n)}</span>` : `<span class="dim">-</span>`; }
 
+/*  != ไม่เท่ากับ (แบบหลวม)
+    !== ไม่เท่ากับแบบ strict
+    ? ค่าเมื่อจริง : ค่าเมื่อเท็จ != ต้องไม่เป็น
+    return = ส่งค่าผลลัพธ์ออกจากฟังก์ชัน */
+
+
+
+/* format เงิน */
+function fmtMoney(n) { return (n != null && n !== 0) ? n.toLocaleString('th-TH', {minimumFractionDigits:2, maximumFractionDigits:2}) : '-'; }
+/* ถ้าไม่มีค่า → "-" */
+function dash(n)     { return (n != null && n > 0)   ? `<span class="num" style="font-weight:600;color:#1b4965">${fmt(n)}</span>` : `<span class="dim">-</span>`; }
+/* ================= KPI ================= */
 function renderSummary() {
   const counts = {abroad:0, partial:0, ready:0};
   raw.forEach(r => { const s = getStatus(r); if (counts[s] !== undefined) counts[s]++; });
+  /*  forEach = loop ทุกตัวใน array
+     ++ = เพิ่มค่า +1   */
+
   document.getElementById('summaryGrid').innerHTML = `
     <div class="metric"><div class="metric-label">รายการทั้งหมด</div><div class="metric-value">${raw.length}</div></div>
     <div class="metric"><div class="metric-label">ตปท.</div><div class="metric-value c-abroad">${counts.abroad}</div></div>
@@ -156,26 +225,29 @@ function renderSummary() {
   `;
 }
 
+
+/* ================= TABLE ================= */
 function renderTable() {
-  const search       = document.getElementById('searchInput').value.toLowerCase();
+    /* ดึงค่า filter */
+  const search       = document.getElementById('searchInput').value.toLowerCase(); /*toLowerCase() = แปลงเป็นตัวเล็ก*/
   const statusFilter = document.getElementById('filterStatus').value;
   const salesFilter  = document.getElementById('filterSales').value;
-
+/* filter */
   let filtered = raw.filter(r => {
-    const matchSearch  = r.so.toLowerCase().includes(search) || r.item.toLowerCase().includes(search) || r.salesco.toLowerCase().includes(search);
-    const matchStatus  = !statusFilter || getStatus(r) === statusFilter;
-    const matchSales   = !salesFilter  || r.salesco === salesFilter;
+    const matchSearch = r.so.toLowerCase().includes(search) || r.item.toLowerCase().includes(search) || r.salesco.toLowerCase().includes(search);   /* includes = มีคำนี้อยู่ไหม */
+    const matchStatus = !statusFilter || getStatus(r) === statusFilter;
+    const matchSales  = !salesFilter  || r.salesco === salesFilter;
     return matchSearch && matchStatus && matchSales;
   });
-
+/* sort */
   filtered.sort((a, b) => {
+    /* string ใช้ localeCompare */
     if (sortCol === 'salesco') return sortDir * a.salesco.localeCompare(b.salesco);
     if (sortCol === 'status')  return sortDir * getStatus(a).localeCompare(getStatus(b));
     if (sortCol === 'item')    return sortDir * a.item.localeCompare(b.item);
     if (sortCol === 'so')      return sortDir * a.so.localeCompare(b.so);
-    // numeric columns
-    const cols = { po:'po', order:'order', deposit:'deposit', depositVal:'depositVal', inv:'inv', remain:'remain' };
-    const key = cols[sortCol] || sortCol;
+    const key = {po:'po', order:'order', deposit:'deposit', depositVal:'depositVal', inv:'inv', stored:'stored', remain:'remain'}[sortCol] || sortCol;
+      /* number ใช้ลบกัน */
     return sortDir * ((a[key] || 0) - (b[key] || 0));
   });
 
@@ -189,36 +261,47 @@ function renderTable() {
       s === 'abroad'  ? '<span class="badge badge-abroad">ตปท.</span>'    :
       s === 'partial' ? '<span class="badge badge-warn">บางส่วน</span>'   : '';
 
-    const updatedDot = r.updated ? `<span class="updated-dot" title="อัปเดต">(29-04)</span>` : '';
-
-    // ฝากของ: qty only (value in next column)
-    const depositQty = r.deposit > 0
-      ? `<span class="deposit-qty">${fmt(r.deposit)}</span>`
-      : `<span class="dim">-</span>`;
+    /* รอเปิด INV: ถ้ามี depositIn ให้แสดง +N สีเขียวไว้ทางซ้าย แล้วตามด้วยตัวเลขหลัก */
+    let depositCell;
+    if (r.deposit > 0) {
+      const delta = r.depositIn > 0
+        ? `<span class="delta-in">+${fmt(r.depositIn)}</span> `
+        : '';
+      depositCell = `${delta}<span class="deposit-qty">${fmt(r.deposit)}</span>`;
+    } else {
+      depositCell = `<span class="dim">-</span>`;
+    }
 
     const depositValTd = r.depositVal > 0
-      ? `<span class="deposit-val" style="font-size:16px;font-weight:600;color:#bc4b51">${fmtMoney(r.depositVal)}</span>`
+      ? `<span class="deposit-val">${fmtMoney(r.depositVal)}</span>`
+      : `<span class="dim">-</span>`;
+
+    const storedCell = r.stored > 0
+      ? `<span class="stored-qty">${fmt(r.stored)}</span>`
       : `<span class="dim">-</span>`;
 
     return `<tr>
       <td class="so left">${r.so}</td>
-      <td class="po left">${fmtMoney(r.po)} </td>
-      <td class="item left">${r.item}${updatedDot}</td>
+      <td class="po"><div style="display:inline-block;text-align:right;min-width:110px">${fmtMoney(r.po)} ฿</div></td>
+      <td class="item left">${r.item}</td>
       <td class="num">${fmt(r.order)}</td>
-      <td class="grp-l">${depositQty}</td>
-      <td>${depositValTd}</td>
+      <td class="grp-l">${depositCell}</td>
+      <td >   <div style="display:inline-block;text-align:right;min-width:110px;color:#bc4b51;font-weight:550;">
+    ${r.depositVal > 0 ? fmtMoney(r.depositVal) + ' ฿' : '-'}</div></td>
       <td class="grp-l">${dash(r.inv)}</td>
-      <td>${dash(r.remain)}</td>
+      <td>${storedCell}</td>
+      <td class="grp-l">${dash(r.remain)}</td>
       <td class="grp-l">${badge}</td>
       <td class="salesco left">${r.salesco}</td>
     </tr>`;
   }).join('');
 }
-
+/* ================= EVENT ================= */
+/* เมื่อพิมพ์หรือเลือก filter → refresh */
 ['searchInput','filterStatus','filterSales'].forEach(id =>
   document.getElementById(id).addEventListener('input', renderTable)
 );
-
+/* click header = sort */
 document.querySelectorAll('thead th[data-col]').forEach(th => {
   th.addEventListener('click', () => {
     const col = th.dataset.col;
@@ -233,7 +316,8 @@ document.querySelectorAll('thead th[data-col]').forEach(th => {
     renderTable();
   });
 });
-
+/* ================= INIT ================= */
+/* โหลดหน้า = render */
 renderSummary();
 renderTable();
 </script>
