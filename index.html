@@ -12,7 +12,6 @@ h2 { font-size: 22px; font-weight: 600; margin-bottom: 1rem; color: #1b4965; }
 .metric { background: #fff; border: 0.5px solid #e5e5e3; border-radius: 10px; padding: 12px 14px; }
 .metric-label { font-size: 16px; color: #1b4965; margin-bottom: 4px; font-weight: 700; }
 .metric-value { font-size: 25px; font-weight: 600; }
-.metric-value.c-pending { color: #bc4b51; }
 .metric-value.c-abroad  { color: #bc4b51; }
 .metric-value.c-partial { color: #4a536b; }
 .metric-value.c-ready   { color: #4281a4; }
@@ -36,18 +35,25 @@ td.salesco { font-weight: 500; font-size: 16px; color: #1b4965; }
 td.po { font-size: 16px; color: #1b4965; font-weight: 600; }
 td.item { font-size: 16px; font-weight: 500; color: #1b4965; }
 td.dim { color: #ccc; }
+td.num { font-weight: 600; color: #1b4965; }
+
+/* ฝากของ - qty + value stacked */
 .deposit-wrap { display: flex; flex-direction: column; align-items: flex-end; gap: 1px; }
 .deposit-qty { font-weight: 750; color: #bc4b51; }
-.deposit-val { font-size: 16px; color: #bc4b51; font-weight: 550; }
+.deposit-val { font-size: 14px; color: #bc4b51; font-weight: 550; }
+
 .badge { display: inline-block; border-radius: 5px; font-size: 16px; font-weight: 500; padding: 2px 8px; letter-spacing: 0.02em; }
-.badge-ok      { background: #eaf3de; color: #43aa8b; }
 .badge-ready   { background: #4281a4; color: #fff; }
 .badge-abroad  { background: #fe938c; color: #fff; }
 .badge-warn    { background: #9cafb7; color: #fff; }
-.badge-danger  { background: #a9d6e5; color: #a32d2d; }
+
 .sort-arrow { font-size: 16px; margin-left: 5px; opacity: 0.4; }
 .sort-active .sort-arrow { opacity: 1; }
-.updated-dot {   color: #bc4b51; margin-left: 10px; vertical-align: middle; }
+.updated-dot { color: #bc4b51; margin-left: 10px; vertical-align: middle; }
+
+/* column group divider */
+thead th.grp-l { border-left: 2px solid rgba(255,255,255,0.25); }
+tbody td.grp-l { border-left: 1px solid #e5e5e3; }
 </style>
 </head>
 <body>
@@ -57,11 +63,9 @@ td.dim { color: #ccc; }
   <input type="text" id="searchInput" placeholder="ค้นหา SO / Item / Sales Co." />
   <select id="filterStatus">
     <option value="">สถานะ</option>
-   
     <option value="abroad">ตปท.</option>
     <option value="partial">บางส่วน</option>
     <option value="ready">พร้อมส่ง</option>
-    
   </select>
   <select id="filterSales">
     <option value="">Sales Co.</option>
@@ -75,14 +79,15 @@ td.dim { color: #ccc; }
   <table>
     <thead>
       <tr>
-        <th class="left" style="min-width:88px" data-col="so">Sales Order <span class="sort-arrow">↕</span></th>
-        <th class="left" style="min-width:115px" data-col="po">ยอดรวม PO (ก่อน VAT) <span class="sort-arrow">↕</span></th>
+        <th class="left" style="min-width:88px"  data-col="so">Sales Order <span class="sort-arrow">↕</span></th>
+        <th class="left" style="min-width:135px" data-col="po">ยอดรวม PO (ก่อน VAT) <span class="sort-arrow">↕</span></th>
         <th class="left" style="min-width:120px" data-col="item">Item <span class="sort-arrow">↕</span></th>
-        <th style="min-width:55px" data-col="order">Order <span class="sort-arrow">↕</span></th>
-        <th style="min-width:55px" data-col="invinv">INV <span class="sort-arrow">↕</span></th>
-        <th style="min-width:110px" data-col="deposit">ฝากของ  <span class="sort-arrow">↕</span></th>
-        <th style="min-width:55px" data-col="remain">ตปท <span class="sort-arrow">↕</span></th>
-        <th style="min-width:80px" data-col="status">สถานะ <span class="sort-arrow">↕</span></th>
+        <th style="min-width:55px"  data-col="order">Order <span class="sort-arrow">↕</span></th>
+        <th style="min-width:75px"  data-col="deposit" class="grp-l">ฝากของ (ชิ้น) <span class="sort-arrow">↕</span></th>
+        <th style="min-width:115px" data-col="depositVal">มูลค่าฝาก (฿) <span class="sort-arrow">↕</span></th>
+        <th style="min-width:55px"  data-col="inv" class="grp-l">INV <span class="sort-arrow">↕</span></th>
+        <th style="min-width:55px"  data-col="remain">ตปท. <span class="sort-arrow">↕</span></th>
+        <th style="min-width:80px"  data-col="status" class="grp-l">สถานะ <span class="sort-arrow">↕</span></th>
         <th class="left" style="min-width:90px" data-col="salesco">Sales Co. <span class="sort-arrow">↕</span></th>
       </tr>
     </thead>
@@ -92,49 +97,48 @@ td.dim { color: #ccc; }
 
 <script>
 const raw = [
-  {so:"SC-208618", po:2734800,  item:"DMG7000/M1",   order:110,  deposit:47,   depositVal:313960,  inv:63,     remain:0,   updated:false, salesco:"Papitchaya"},
-  {so:"SC-209277", po:81055,    item:"SA1F34A275F",   order:5,    deposit:0,   depositVal:0,       inv:0,      remain:5,   updated:false, salesco:"Papitchaya"},
-  {so:"SC-211915", po:2523500,  item:"DMR121",        order:230,  deposit:200, depositVal:290000,  inv:0,      remain:30,  updated:false, salesco:"Papitchaya"},
-  {so:"SC-211915", po:2523500,  item:"DMG615",        order:300,  deposit:10,  depositVal:42000,   inv:290,    remain:0,   updated:false, salesco:"Papitchaya"},
-  {so:"SC-212353", po:1087500,  item:"DMG800/M12",    order:150,  deposit:125, depositVal:906250,  inv:25,     remain:0,   updated:false, salesco:"Jureemas"},
-  {so:"SC-214004", po:30530,    item:"GAX1020A",      order:25,   deposit:25,  depositVal:8200,    inv:0,      remain:0,   updated:true,  salesco:"Jureemas"},
-  {so:"SC-214004", po:30530,    item:"GAX1011A",      order:25,   deposit:25,  depositVal:6650,    inv:0,      remain:0,   updated:true,  salesco:"Jureemas"},
-  {so:"SC-214004", po:30530,    item:"GAZ016",        order:20,   deposit:20,  depositVal:15680,   inv:0,      remain:0,   updated:true,  salesco:"Jureemas"},
-  {so:"SC-214374", po:44157,    item:"DM0T0050",      order:105,  deposit:0,   depositVal:0,       inv:30,     remain:75,  updated:false, salesco:"Papitchaya"},
-  {so:"SC-214374", po:44157,    item:"DM0T0060",      order:12,   deposit:0,   depositVal:0,       inv:0,      remain:12,  updated:false, salesco:"Papitchaya"},
-  {so:"SC-214374", po:44157,    item:"DM0T0080",      order:3,    deposit:0,   depositVal:0,       inv:0,      remain:3,   updated:false, salesco:"Papitchaya"},
-  {so:"SC-214374", po:44157,    item:"DM0T0100",      order:3,    deposit:0,   depositVal:0,       inv:0,      remain:3,   updated:false, salesco:"Papitchaya"},
-  {so:"SC-214426", po:69000,    item:"SASD5VR",       order:30,   deposit:30,  depositVal:69000,   inv:0,      remain:0,   updated:true,  salesco:"Patcharaporn"},
-  {so:"SC-214428", po:2450000,  item:"DMG9000",       order:100,  deposit:93,  depositVal:2278500, inv:7,      remain:0,   updated:false, salesco:"Patcharaporn"},
-  {so:"SC-214546", po:1215,     item:"DM0T0050",      order:3,    deposit:3,   depositVal:1215,    inv:0,      remain:0,   updated:true,  salesco:"Jureemas"},
-  {so:"SC-214569", po:88060,    item:"SA03PA320R",     order:20,  deposit:20,  depositVal:88060,   inv:0,      remain:0,   updated:true,  salesco:"Papitchaya"},
-  {so:"SC-214864", po:9960000,  item:"DMED121",       order:600,  deposit:13,  depositVal:40300,   inv:67,     remain:520, updated:false, salesco:"Papitchaya"},
-  {so:"SC-214864", po:9960000,  item:"DMG110",        order:2000, deposit:354, depositVal:1433700, inv:0,      remain:1646,updated:true,  salesco:"Papitchaya"},
-  {so:"SC-214878", po:74400,    item:"DMT525-40-3",   order:24,   deposit:21,  depositVal:65100,   inv:0,      remain:3,   updated:false, salesco:"Papitchaya"},
-  {so:"SC-214882", po:14355,    item:"GA063SAET6",    order:5,    deposit:0,   depositVal:0,       inv:0,      remain:5,   updated:false, salesco:"Papitchaya"},
-  {so:"SC-214882", po:14355,    item:"GAX5001",       order:1,    deposit:0,   depositVal:0,       inv:0,      remain:1,   updated:false, salesco:"Papitchaya"},
-  {so:"SC-215045", po:5100000,  item:"DMG510",        order:800,  deposit:451, depositVal:1127500, inv:100,    remain:249, updated:true,  salesco:"Patcharaporn"},
-  {so:"SC-215045", po:5100000,  item:"DMG615",        order:1000, deposit:112, depositVal:347200,  inv:0,      remain:888, updated:false, salesco:"Patcharaporn"},
-  {so:"SC-215127", po:213000,   item:"DCRL8",         order:30,   deposit:0,   depositVal:0,       inv:0,      remain:30,  updated:false, salesco:"Papitchaya"},
-  {so:"SC-215127", po:213000,   item:"EXP1006",       order:30,   deposit:0,   depositVal:0,       inv:0,      remain:30,  updated:false, salesco:"Papitchaya"},
-  {so:"SC-215358", po:12500,    item:"PAX2A000",      order:1,    deposit:1,   depositVal:12500,   inv:0,      remain:0,   updated:false, salesco:"Patcharaporn"},
-  {so:"SC-215433", po:1215,     item:"DM0T0050",      order:3,    deposit:0,   depositVal:0,       inv:0,      remain:3,   updated:false, salesco:"Patcharaporn"},
-  {so:"SC-215474", po:31590,    item:"DM0T0050",      order:69,   deposit:0,   depositVal:0,       inv:0,      remain:69,  updated:false, salesco:"Papitchaya"},
-  {so:"SC-215474", po:31590,    item:"DM0T0060",      order:3,    deposit:0,   depositVal:0,       inv:0,      remain:3,   updated:false, salesco:"Papitchaya"},
-  {so:"SC-215474", po:31590,    item:"DM0T0080",      order:3,    deposit:0,   depositVal:0,       inv:0,      remain:3,   updated:false, salesco:"Papitchaya"},
-  {so:"SC-215474", po:31590,    item:"DM0T0100",      order:3,    deposit:3,   depositVal:1215,    inv:0,      remain:0,   updated:false, salesco:"Papitchaya"},
-  {so:"SC-215476", po:74263.20, item:"ATL610",        order:4,    deposit:4,   depositVal:74263.20,inv:0,      remain:0,   updated:false, salesco:"Jureemas"},
-  {so:"SC-215486", po:177600,   item:"DMT400-50-3",   order:48,   deposit:31,  depositVal:114700,  inv:0,      remain:17,  updated:false, salesco:"Papitchaya"},
-  {so:"SC-215491", po:3660.80,  item:"GAZ016",        order:4,    deposit:0,   depositVal:0,       inv:3,      remain:1,   updated:false, salesco:"Patcharaporn"},
-  {so:"SC-215573", po:77780,    item:"GAZ016",        order:50,   deposit:0,   depositVal:0,       inv:0,      remain:50,  updated:false, salesco:"Papitchaya"},
-  {so:"SC-215573", po:77780,    item:"GAX1011A",      order:50,   deposit:0,   depositVal:0,       inv:0,      remain:50,  updated:false, salesco:"Papitchaya"},
-  {so:"SC-215573", po:77780,    item:"GAX1020A",      order:50,   deposit:0,   depositVal:0,       inv:0,      remain:50,  updated:false, salesco:"Papitchaya"},
-  {so:"SC-215671", po:9720,     item:"DM0T0050",      order:24,   deposit:0,   depositVal:0,       inv:0,      remain:24,  updated:false, salesco:"Jureemas"},
-  {so:"SC-216009", po:9300,     item:"DMT525-40-3",   order:3,    deposit:0,   depositVal:0,       inv:0,      remain:3,   updated:false, salesco:"Papitchaya"},
+  {so:"SC-208618", po:2734800,    item:"DMG7000/M1",   order:110,  deposit:47,   depositVal:313960,    inv:63,   remain:0,    updated:false, salesco:"Papitchaya"},
+  {so:"SC-209277", po:81055,      item:"SA1F34A275F",   order:5,    deposit:0,    depositVal:0,         inv:0,    remain:5,    updated:false, salesco:"Papitchaya"},
+  {so:"SC-211915", po:2523500,    item:"DMR121",        order:230,  deposit:200,  depositVal:290000,    inv:0,    remain:30,   updated:false, salesco:"Papitchaya"},
+  {so:"SC-211915", po:2523500,    item:"DMG615",        order:300,  deposit:10,   depositVal:42000,     inv:290,  remain:0,    updated:false, salesco:"Papitchaya"},
+  {so:"SC-212353", po:1087500,    item:"DMG800/M12",    order:150,  deposit:125,  depositVal:906250,    inv:25,   remain:0,    updated:false, salesco:"Jureemas"},
+  {so:"SC-214004", po:30530,      item:"GAX1020A",      order:25,   deposit:25,   depositVal:8200,      inv:0,    remain:0,    updated:true,  salesco:"Jureemas"},
+  {so:"SC-214004", po:30530,      item:"GAX1011A",      order:25,   deposit:25,   depositVal:6650,      inv:0,    remain:0,    updated:true,  salesco:"Jureemas"},
+  {so:"SC-214004", po:30530,      item:"GAZ016",        order:20,   deposit:20,   depositVal:15680,     inv:0,    remain:0,    updated:true,  salesco:"Jureemas"},
+  {so:"SC-214374", po:44157,      item:"DM0T0050",      order:105,  deposit:0,    depositVal:0,         inv:30,   remain:75,   updated:false, salesco:"Papitchaya"},
+  {so:"SC-214374", po:44157,      item:"DM0T0060",      order:12,   deposit:0,    depositVal:0,         inv:0,    remain:12,   updated:false, salesco:"Papitchaya"},
+  {so:"SC-214374", po:44157,      item:"DM0T0080",      order:3,    deposit:0,    depositVal:0,         inv:0,    remain:3,    updated:false, salesco:"Papitchaya"},
+  {so:"SC-214374", po:44157,      item:"DM0T0100",      order:3,    deposit:0,    depositVal:0,         inv:0,    remain:3,    updated:false, salesco:"Papitchaya"},
+  {so:"SC-214426", po:69000,      item:"SASD5VR",       order:30,   deposit:30,   depositVal:69000,     inv:0,    remain:0,    updated:true,  salesco:"Patcharaporn"},
+  {so:"SC-214428", po:2450000,    item:"DMG9000",       order:100,  deposit:93,   depositVal:2278500,   inv:7,    remain:0,    updated:false, salesco:"Patcharaporn"},
+  {so:"SC-214546", po:1215,       item:"DM0T0050",      order:3,    deposit:3,    depositVal:1215,      inv:0,    remain:0,    updated:true,  salesco:"Jureemas"},
+  {so:"SC-214569", po:88060,      item:"SA03PA320R",    order:20,   deposit:20,   depositVal:88060,     inv:0,    remain:0,    updated:true,  salesco:"Papitchaya"},
+  {so:"SC-214864", po:9960000,    item:"DMED121",       order:600,  deposit:13,   depositVal:40300,     inv:67,   remain:520,  updated:false, salesco:"Papitchaya"},
+  {so:"SC-214864", po:9960000,    item:"DMG110",        order:2000, deposit:354,  depositVal:1433700,   inv:0,    remain:1646, updated:true,  salesco:"Papitchaya"},
+  {so:"SC-214878", po:74400,      item:"DMT525-40-3",   order:24,   deposit:21,   depositVal:65100,     inv:0,    remain:3,    updated:false, salesco:"Papitchaya"},
+  {so:"SC-214882", po:14355,      item:"GA063SAET6",    order:5,    deposit:0,    depositVal:0,         inv:0,    remain:5,    updated:false, salesco:"Papitchaya"},
+  {so:"SC-214882", po:14355,      item:"GAX5001",       order:1,    deposit:0,    depositVal:0,         inv:0,    remain:1,    updated:false, salesco:"Papitchaya"},
+  {so:"SC-215045", po:5100000,    item:"DMG510",        order:800,  deposit:451,  depositVal:1127500,   inv:100,  remain:249,  updated:true,  salesco:"Patcharaporn"},
+  {so:"SC-215045", po:5100000,    item:"DMG615",        order:1000, deposit:112,  depositVal:347200,    inv:0,    remain:888,  updated:false, salesco:"Patcharaporn"},
+  {so:"SC-215127", po:213000,     item:"DCRL8",         order:30,   deposit:0,    depositVal:0,         inv:0,    remain:30,   updated:false, salesco:"Papitchaya"},
+  {so:"SC-215127", po:213000,     item:"EXP1006",       order:30,   deposit:0,    depositVal:0,         inv:0,    remain:30,   updated:false, salesco:"Papitchaya"},
+  {so:"SC-215358", po:12500,      item:"PAX2A000",      order:1,    deposit:1,    depositVal:12500,     inv:0,    remain:0,    updated:false, salesco:"Patcharaporn"},
+  {so:"SC-215433", po:1215,       item:"DM0T0050",      order:3,    deposit:0,    depositVal:0,         inv:0,    remain:3,    updated:false, salesco:"Patcharaporn"},
+  {so:"SC-215474", po:31590,      item:"DM0T0050",      order:69,   deposit:0,    depositVal:0,         inv:0,    remain:69,   updated:false, salesco:"Papitchaya"},
+  {so:"SC-215474", po:31590,      item:"DM0T0060",      order:3,    deposit:0,    depositVal:0,         inv:0,    remain:3,    updated:false, salesco:"Papitchaya"},
+  {so:"SC-215474", po:31590,      item:"DM0T0080",      order:3,    deposit:0,    depositVal:0,         inv:0,    remain:3,    updated:false, salesco:"Papitchaya"},
+  {so:"SC-215474", po:31590,      item:"DM0T0100",      order:3,    deposit:3,    depositVal:1215,      inv:0,    remain:0,    updated:false, salesco:"Papitchaya"},
+  {so:"SC-215476", po:74263.20,   item:"ATL610",        order:4,    deposit:4,    depositVal:74263.20,  inv:0,    remain:0,    updated:false, salesco:"Jureemas"},
+  {so:"SC-215486", po:177600,     item:"DMT400-50-3",   order:48,   deposit:31,   depositVal:114700,    inv:0,    remain:17,   updated:false, salesco:"Papitchaya"},
+  {so:"SC-215491", po:3660.80,    item:"GAZ016",        order:4,    deposit:0,    depositVal:0,         inv:3,    remain:1,    updated:false, salesco:"Patcharaporn"},
+  {so:"SC-215573", po:77780,      item:"GAZ016",        order:50,   deposit:0,    depositVal:0,         inv:0,    remain:50,   updated:false, salesco:"Papitchaya"},
+  {so:"SC-215573", po:77780,      item:"GAX1011A",      order:50,   deposit:0,    depositVal:0,         inv:0,    remain:50,   updated:false, salesco:"Papitchaya"},
+  {so:"SC-215573", po:77780,      item:"GAX1020A",      order:50,   deposit:0,    depositVal:0,         inv:0,    remain:50,   updated:false, salesco:"Papitchaya"},
+  {so:"SC-215671", po:9720,       item:"DM0T0050",      order:24,   deposit:0,    depositVal:0,         inv:0,    remain:24,   updated:false, salesco:"Jureemas"},
+  {so:"SC-216009", po:9300,       item:"DMT525-40-3",   order:3,    deposit:0,    depositVal:0,         inv:0,    remain:3,    updated:false, salesco:"Papitchaya"},
 ];
 
 function getStatus(r) {
-  
   if (r.remain === r.order && r.inv === 0 && r.deposit === 0) return 'abroad';
   if (r.deposit >= r.order && r.inv === 0) return 'ready';
   if (r.inv > 0 || r.deposit > 0 || r.remain > 0) return 'partial';
@@ -142,18 +146,16 @@ function getStatus(r) {
 }
 
 let sortCol = 'so', sortDir = 1;
-function fmt(n) { return n ? n.toLocaleString('th-TH') : '-'; }
-function fmtMoney(n) {
-  if (!n) return '-';
-  return n.toLocaleString('th-TH', {minimumFractionDigits:2, maximumFractionDigits:2});
-}
+
+function fmt(n)      { return (n != null && n !== 0) ? n.toLocaleString('th-TH') : '-'; }
+function fmtMoney(n) { return (n != null && n !== 0) ? n.toLocaleString('th-TH', {minimumFractionDigits:2, maximumFractionDigits:2}) : '-'; }
+function dash(n)     { return (n != null && n > 0)   ? `<span class="num">${fmt(n)}</span>` : `<span class="dim">-</span>`; }
 
 function renderSummary() {
-  const counts = {pending:0, abroad:0, partial:0, ready:0, };
-  raw.forEach(r => counts[getStatus(r)]++);
+  const counts = {abroad:0, partial:0, ready:0};
+  raw.forEach(r => { const s = getStatus(r); if (counts[s] !== undefined) counts[s]++; });
   document.getElementById('summaryGrid').innerHTML = `
     <div class="metric"><div class="metric-label">รายการทั้งหมด</div><div class="metric-value">${raw.length}</div></div>
-   
     <div class="metric"><div class="metric-label">ตปท.</div><div class="metric-value c-abroad">${counts.abroad}</div></div>
     <div class="metric"><div class="metric-label">บางส่วน</div><div class="metric-value c-partial">${counts.partial}</div></div>
     <div class="metric"><div class="metric-label">พร้อมส่ง</div><div class="metric-value c-ready">${counts.ready}</div></div>
@@ -161,27 +163,26 @@ function renderSummary() {
 }
 
 function renderTable() {
-  const search = document.getElementById('searchInput').value.toLowerCase();
+  const search       = document.getElementById('searchInput').value.toLowerCase();
   const statusFilter = document.getElementById('filterStatus').value;
-  const salesFilter = document.getElementById('filterSales').value;
+  const salesFilter  = document.getElementById('filterSales').value;
 
   let filtered = raw.filter(r => {
-    const matchSearch = r.so.toLowerCase().includes(search)
-      || r.item.toLowerCase().includes(search)
-      || r.salesco.toLowerCase().includes(search);
-    const matchStatus = !statusFilter || getStatus(r) === statusFilter;
-    const matchSales = !salesFilter || r.salesco === salesFilter;
+    const matchSearch  = r.so.toLowerCase().includes(search) || r.item.toLowerCase().includes(search) || r.salesco.toLowerCase().includes(search);
+    const matchStatus  = !statusFilter || getStatus(r) === statusFilter;
+    const matchSales   = !salesFilter  || r.salesco === salesFilter;
     return matchSearch && matchStatus && matchSales;
   });
 
-  filtered.sort((a,b) => {
-    let av, bv;
-    if (sortCol === 'salesco') { av = a.salesco; bv = b.salesco; return sortDir * av.localeCompare(bv); }
-    if (sortCol === 'po') { av = a.po||0; bv = b.po||0; return sortDir*(av-bv); }
-    if (sortCol === 'status') { av = getStatus(a); bv = getStatus(b); return sortDir * av.localeCompare(bv); }
-    av = a[sortCol]; bv = b[sortCol];
-    if (typeof av === 'string') return sortDir * av.localeCompare(bv);
-    return sortDir * ((av||0)-(bv||0));
+  filtered.sort((a, b) => {
+    if (sortCol === 'salesco') return sortDir * a.salesco.localeCompare(b.salesco);
+    if (sortCol === 'status')  return sortDir * getStatus(a).localeCompare(getStatus(b));
+    if (sortCol === 'item')    return sortDir * a.item.localeCompare(b.item);
+    if (sortCol === 'so')      return sortDir * a.so.localeCompare(b.so);
+    // numeric columns
+    const cols = { po:'po', order:'order', deposit:'deposit', depositVal:'depositVal', inv:'inv', remain:'remain' };
+    const key = cols[sortCol] || sortCol;
+    return sortDir * ((a[key] || 0) - (b[key] || 0));
   });
 
   document.getElementById('rowCount').textContent = `แสดง ${filtered.length} / ${raw.length} รายการ`;
@@ -190,31 +191,31 @@ function renderTable() {
   tbody.innerHTML = filtered.map(r => {
     const s = getStatus(r);
     const badge =
-     
       s === 'ready'   ? '<span class="badge badge-ready">พร้อมส่ง</span>' :
-      s === 'abroad'  ? '<span class="badge badge-abroad">ตปท.</span>' :
-      s === 'partial' ? '<span class="badge badge-warn">บางส่วน</span>' :'';
-          
-
-    const depositCell = r.deposit > 0
-      ? `<div class="deposit-wrap"><span class="deposit-qty">${fmt(r.deposit)}</span><span class="deposit-val">${fmtMoney(r.depositVal)} ฿</span></div>`
-      : `<span class="dim">-</span>`;
-
-    const remainTd = r.remain > 0
-      ? `<td style="color:#1b4965;font-weight:600">${fmt(r.remain)}</td>`
-      : `<td class="dim">-</td>`;
+      s === 'abroad'  ? '<span class="badge badge-abroad">ตปท.</span>'    :
+      s === 'partial' ? '<span class="badge badge-warn">บางส่วน</span>'   : '';
 
     const updatedDot = r.updated ? `<span class="updated-dot" title="อัปเดต">(29-04)</span>` : '';
+
+    // ฝากของ: qty only (value in next column)
+    const depositQty = r.deposit > 0
+      ? `<span class="deposit-qty">${fmt(r.deposit)}</span>`
+      : `<span class="dim">-</span>`;
+
+    const depositValTd = r.depositVal > 0
+      ? `<span class="deposit-val" style="font-size:16px;font-weight:600;color:#bc4b51">${fmtMoney(r.depositVal)}</span>`
+      : `<span class="dim">-</span>`;
 
     return `<tr>
       <td class="so left">${r.so}</td>
       <td class="po left">${fmtMoney(r.po)} ฿</td>
       <td class="item left">${r.item}${updatedDot}</td>
-      <td style="color:#1b4965;font-weight:600">${fmt(r.order)}</td>
-      <td style="color:#1b4965;font-weight:600">${r.inv > 0 ? fmt(r.inv) : '<span class="dim">-</span>'}</td>
-      <td>${depositCell}</td>
-      ${remainTd}
-      <td>${badge}</td>
+      <td class="num">${fmt(r.order)}</td>
+      <td class="grp-l">${depositQty}</td>
+      <td>${depositValTd}</td>
+      <td class="grp-l">${dash(r.inv)}</td>
+      <td>${dash(r.remain)}</td>
+      <td class="grp-l">${badge}</td>
       <td class="salesco left">${r.salesco}</td>
     </tr>`;
   }).join('');
@@ -228,7 +229,11 @@ document.querySelectorAll('thead th[data-col]').forEach(th => {
   th.addEventListener('click', () => {
     const col = th.dataset.col;
     if (sortCol === col) sortDir *= -1; else { sortCol = col; sortDir = 1; }
-    document.querySelectorAll('thead th').forEach(t => t.classList.remove('sort-active'));
+    document.querySelectorAll('thead th').forEach(t => {
+      t.classList.remove('sort-active');
+      const arrow = t.querySelector('.sort-arrow');
+      if (arrow) arrow.textContent = '↕';
+    });
     th.classList.add('sort-active');
     th.querySelector('.sort-arrow').textContent = sortDir === 1 ? '↑' : '↓';
     renderTable();
