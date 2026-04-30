@@ -1,326 +1,1085 @@
 <!DOCTYPE html>
 <html lang="th">
-  <!-- lang="th" = ระบุว่าหน้านี้ใช้ภาษาไทย (ช่วย SEO + screen reader) -->
-
 <head>
-<meta charset="UTF-8" />
-<!-- UTF-8 = มาตรฐาน encoding ที่รองรับภาษาไทย/ทุกภาษา
-     ถ้าไม่ใส่ → ตัวอักษรอาจเพี้ยน เช่น กลายเป็น ??? -->
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<!-- ทำให้ responsive บนมือถือ
-     width=device-width = กว้างเท่าหน้าจอจริง
-     initial-scale=1.0 = ไม่ซูมเริ่มต้น -->
-<title>ALL POWER Group Dashboard</title>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>ALL POWER Group Dashboard v5</title>
+
+<!-- ===================================================
+     GOOGLE FONTS — โหลดฟอนต์จาก Google
+     Sarabun = ฟอนต์ภาษาไทย อ่านง่าย สวยงาม
+     =================================================== -->
+<link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
 
 <style>
-
-  /* ================= GLOBAL RESET ================= */
-* { box-sizing: border-box; margin: 0; padding: 0; }
-
-/* ================= BODY ================= */
-body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #dbe9ee; color: #1a1a1a; padding: 1.5rem; font-size: 36px; }
-h2 { font-size: 22px; font-weight: 600; margin-bottom: 1rem; color: #1b4965; }
-
-/* ================= KPI ================= */
-.summary-grid { display: grid; grid-template-columns: repeat(4, minmax(0,1fr)); gap: 10px; margin-bottom: 1.5rem; }
-.metric { background: #fff; border: 0.5px solid #e5e5e3; border-radius: 10px; padding: 12px 14px; }
-.metric-label { font-size: 16px; color: #1b4965; margin-bottom: 4px; font-weight: 700; }
-.metric-value { font-size: 25px; font-weight: 600; }
-/* สีสถานะ */
-.metric-value.c-abroad  { color: #bc4b51; }
-.metric-value.c-partial { color: #4a536b; }
-.metric-value.c-ready   { color: #4281a4; }
-
-/* ================= FILTER ================= */
-.filters { display: flex; /* เรียงแนวนอน */gap: 8px; flex-wrap: wrap; /* ถ้าล้นให้ขึ้นบรรทัดใหม่ */ margin-bottom: 1rem; align-items: center; }
-/* input + select */
-.filters input, .filters select { font-size: 16px; padding: 6px 10px; border: 0.5px solid #ffe1a8; border-radius: 8px; background: #fff; color: #1b4965; font-weight: 700; }
-.filters input { width: 250px; }
-/* ตัวเลขแสดงจำนวน */
-#rowCount { margin-left: auto; font-size: 16px; color: #4a536b; font-weight: 600; }
-
-/* ================= TABLE ================= */
-.tbl-wrap { overflow-x: auto;/*เลื่อนซ้ายขวาได้*/ border: 0.5px solid #e5e5e3; border-radius: 12px; background: #fff; }
-table { width: 100%; border-collapse: collapse; font-size: 16px; }
-/* HEADER */
-thead th { background: #4a6fa5; color: #fff; font-weight: 500; padding: 9px 10px; text-align: right; white-space: nowrap; border-bottom: 0.5px solid #e5e5e3; cursor: pointer;/*ชี้แล้วเป็นมือ*/ user-select: none; }
-thead th.left { text-align: left; }
-thead th:hover { color: #faf0ca; }
-/* BODY */
-tbody tr { border-bottom: 0.5px solid #f0efeb; }
-tbody tr:last-child { border-bottom: none; }
-tbody tr:hover { background: #faf0ca; }
-td { padding: 8px 15px; text-align: right; color: #1a1a1a; white-space: nowrap; vertical-align: middle; }
-td.left { text-align: left; }
-/* ================= DATA STYLE ================= */
-td.so      { font-weight: 600; color: #1b4965; font-size: 16px; }
-td.po      { font-size: 16px; color: #1b4965; font-weight: 600; text-align: center; font-variant-numeric: tabular-nums; }
-td.item    { font-size: 16px; font-weight: 500; color: #1b4965; }
-td.num     { font-weight: 600; color: #1b4965; }
-td.salesco { font-weight: 500; font-size: 16px; color: #1b4965; }
-span.dim   { color: #ccc; }
-
-/* ================= DEPOSIT ================= */
-.deposit-wrap-cell { display: inline-flex; align-items: center; gap: 5px; }
-.deposit-qty { font-weight: 700; color: #bc4b51; }
-.deposit-val { font-size: 16px; font-weight: 600; color: #bc4b51; }
-
-/* delta badge +N (เข้ามาใหม่) */
-.delta-in {
-  font-size: 12px; font-weight: 700;
-  color: #2d6a4f; background: #d8f3dc;
-  border-radius: 4px; padding: 1px 5px;
-  line-height: 1.5; letter-spacing: 0.02em;
+/* ===================================================
+   CSS VARIABLES — กำหนดสีและค่าต่าง ๆ กลาง ๆ ไว้ที่นี่
+   ที่เดียว เวลาแก้สี แก้แค่ที่เดียวทั้งเว็บก็เปลี่ยน
+   =================================================== */
+:root {
+  --navy:      #1b3a5c;   /* สีหลัก navy เข้ม */
+  --blue:      #2563a8;   /* สีฟ้ากลาง */
+  --blue-lt:   #4a86c8;   /* สีฟ้าอ่อน */
+  --sky:       #e8f0fa;   /* พื้นหลังฟ้าอ่อนมาก */
+  --red:       #c0392b;   /* สีแดง (ตปท. / ลบ) */
+  --orange:    #d9651a;   /* สีส้ม (ฝากของ) */
+  --green:     #1a7a4a;   /* สีเขียว (กำไร) */
+  --amber:     #b8860b;   /* สีทอง */
+  --white:     #ffffff;
+  --gray-50:   #f8f9fc;
+  --gray-100:  #eef1f6;
+  --gray-200:  #dde2ec;
+  --gray-400:  #8a94a8;
+  --gray-700:  #3d4a5e;
+  --text:      #1a2a3a;   /* สีตัวอักษรหลัก */
+  --radius:    10px;
+  --shadow:    0 2px 12px rgba(27,58,92,0.09);
+  --shadow-lg: 0 4px 24px rgba(27,58,92,0.14);
 }
 
-/* ฝากของ */
-.stored-qty { font-weight: 700; color: #4a536b; }
-/* ================= BADGE ================= */
-.badge { display: inline-block; border-radius: 5px; font-size: 16px; font-weight: 500; padding: 2px 8px; letter-spacing: 0.02em; }
-/* สี status */
-.badge-ready  { background: #4281a4; color: #fff; }
-.badge-abroad { background: #fe938c; color: #fff; }
-.badge-warn   { background: #9cafb7; color: #fff; }
-/* ================= SORT ICON ================= */
-.sort-arrow { font-size: 16px; margin-left: 5px; opacity: 0.4; }
-.sort-active .sort-arrow { opacity: 1; }
-/* เส้นแบ่ง group */
-thead th.grp-l { border-left: 2px solid rgba(255,255,255,0.25); }
-tbody td.grp-l { border-left: 1px solid #e5e5e3; }
+/* ===================================================
+   RESET — ล้างค่า default ของ browser ออก
+   ทุก element ให้เริ่มต้นเท่ากันก่อน
+   =================================================== */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+/* ===================================================
+   BODY — ตัวหน้าเว็บทั้งหมด
+   =================================================== */
+body {
+  font-family: 'Sarabun', sans-serif;
+  background: #dce8f5;            /* พื้นหลังฟ้าอ่อน */
+  background-image:               /* ลวดลายจุดเล็กๆ สร้าง texture */
+    radial-gradient(circle, rgba(37,99,168,0.06) 1px, transparent 1px);
+  background-size: 28px 28px;
+  color: var(--text);
+  padding: 1.5rem 2rem;
+  font-size: 16px;
+  min-height: 100vh;
+}
+
+/* ===================================================
+   HEADER — หัวเรื่องด้านบน
+   =================================================== */
+.page-header {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 1.5rem;
+}
+.page-header-icon {
+  width: 48px; height: 48px;
+  background: linear-gradient(135deg, var(--blue), var(--navy));
+  border-radius: 12px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 22px;
+  box-shadow: 0 4px 12px rgba(37,99,168,0.3);
+}
+.page-title { font-size: 24px; font-weight: 800; color: var(--navy); letter-spacing: -0.3px; }
+.page-subtitle { font-size: 17px; color: var(--gray-400); font-weight: 500; margin-top: 2px; }
+
+/* ===================================================
+   KPI CARDS — การ์ดสรุปข้อมูลด้านบน
+   display:grid = จัดเรียงแบบกริด
+   repeat(auto-fill, ...) = ยืดหดตามขนาดหน้าจออัตโนมัติ
+   =================================================== */
+.summary-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 100px;
+  margin-bottom: 1.5rem;
+}
+.metric {
+  background: var(--white);
+  border-radius: var(--radius);
+  padding: 16px 20px;
+  box-shadow: var(--shadow);
+  border-top: 3px solid transparent;  /* เส้นสีด้านบนการ์ด */
+  transition: transform 0.15s, box-shadow 0.15s;
+}
+.metric:hover { transform: translateY(-2px); box-shadow: var(--shadow-lg); }
+
+/* border-top ของแต่ละการ์ด — สีต่างกันตามประเภท */
+.metric.m-total   { border-top-color: var(--blue); }
+.metric.m-amount  { border-top-color: var(--amber); }
+.metric.m-wait    { border-top-color: var(--red); }
+.metric.m-abroad  { border-top-color: var(--red); }
+.metric.m-stored  { border-top-color: var(--orange); }
+
+.metric-label { font-size: 16px; color: var(--gray-400); font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 6px; }
+.metric-value { font-size: 33px; font-weight: 800; color: var(--navy); }
+.metric-value.c-red    { color: var(--red); }
+.metric-value.c-orange { color: var(--orange); }
+.metric-value.c-amber  { color: var(--amber); }
+.metric-value.c-blue   { color: var(--blue); }
+.metric-sub { font-size: 16px; color: var(--gray-400); margin-top: 3px; font-weight: 500; }
+
+/* ===================================================
+   PANEL — กล่องหลักที่ครอบทุกอย่าง
+   =================================================== */
+.panel {
+  background: var(--white);
+  border-radius: 14px;
+  box-shadow: var(--shadow-lg);
+  overflow: hidden;
+  margin-bottom: 1.5rem;
+}
+.panel-header {
+  background: linear-gradient(135deg, var(--navy) 0%, var(--blue) 100%);
+  padding: 14px 20px;
+  display: flex; align-items: center; gap: 10px;
+  flex-wrap: wrap;
+}
+.panel-title { color: #fff; font-weight: 700; font-size: 25px; } 
+.panel-body { padding: 16px 20px; }
+
+/* ===================================================
+   TOOLBAR — แถบค้นหาและ dropdown กรอง
+   display:flex = จัดเรียงแนวนอน
+   gap = ระยะห่างระหว่าง element
+   flex-wrap:wrap = ถ้าไม่พอที่ให้ขึ้นบรรทัดใหม่
+   =================================================== */
+.toolbar {
+  display: flex; gap: 10px; flex-wrap: wrap;
+  align-items: center;
+}
+.toolbar input, .toolbar select {
+  font-family: 'Sarabun', sans-serif;
+  font-size: 15px; font-weight: 600;
+  padding: 9px 14px;
+  border: 1.5px solid var(--gray-200);
+  border-radius: 8px;
+  background: var(--gray-50);
+  color: var(--navy);
+  outline: none;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+.toolbar input:focus, .toolbar select:focus {
+  border-color: var(--blue-lt);
+  box-shadow: 0 0 0 3px rgba(74,134,200,0.15);
+  background: var(--white);
+}
+.toolbar input#searchInput { width: 440px; }
+
+
+/* ===================================================
+   SEARCH TAGS — ป้ายคำค้นหาที่เพิ่มแล้ว (กด Enter)
+   =================================================== */
+.tag-bar { display: flex; gap: 6px; flex-wrap: wrap; min-height: 24px; margin-top: 8px; }
+.tag {
+  display: inline-flex; align-items: center; gap: 5px;
+  background: var(--blue); color: #fff;
+  border-radius: 20px; font-size: 12px; font-weight: 600;
+  padding: 3px 10px 3px 13px;
+}
+.tag-x { cursor: pointer; opacity: 0.7; font-size: 15px; }
+.tag-x:hover { opacity: 1; }
+
+/* ===================================================
+   COLUMN TOGGLE — ปุ่มซ่อน/แสดงคอลัมน์
+   =================================================== */
+.col-toggle-bar {
+  display: flex; gap: 6px; flex-wrap: wrap;
+  align-items: center; padding: 12px 20px;
+  background: var(--gray-50);
+  border-bottom: 1px solid var(--gray-100);
+}
+.col-toggle-bar .label { font-size: 15px; font-weight: 700; color: #c0392b; text-transform: uppercase; letter-spacing: 0.04em; margin-right: 4px; }
+.col-btn {
+  font-family: 'Sarabun', sans-serif;
+  font-size: 15px; font-weight: 700;
+  padding: 4px 12px; border-radius: 20px;
+  border: 1.5px solid var(--gray-200);
+  background: var(--white); color: var(--navy);
+  cursor: pointer; transition: all 0.15s; user-select: none;
+}
+.col-btn:hover { background: #fde8e8;  border-color: #f5b7b1; color: #c0392b; }
+.col-btn.hidden-col { background: #fde8e8; color: #c0392b; border-color: #f5b7b1; }
+
+/* ===================================================
+   SELECTION BAR — แถบเลือกรายการ (Checkbox)
+   =================================================== */
+.sel-bar {
+  display: flex; align-items: center; gap: 10px;
+  padding: 10px 20px;
+  background: linear-gradient(90deg, #e8f4ea, #f0f9f1);
+  border-bottom: 1px solid #c3e6cb;
+  font-size: 17px; font-weight: 700; color: var(--green);
+  flex-wrap: wrap;
+}
+.sel-bar.hidden { display: none; }
+.sel-info { color: var(--green); }
+.sel-amounts { display: flex; gap: 16px; flex-wrap: wrap; }
+.sel-amount-item { font-size: 17px; }
+.sel-amount-item span { font-weight: 800; color: var(--navy); }
+.btn-clear-sel {
+  margin-left: auto;
+  font-family: 'Sarabun', sans-serif;
+  font-size: 12px; font-weight: 700;
+  padding: 4px 14px; border-radius: 20px;
+  border: 1.5px solid var(--green);
+  background: var(--white); color: var(--green);
+  cursor: pointer; transition: all 0.15s;
+}
+.btn-clear-sel:hover { background: var(--green); color: #fff; }
+
+/* ===================================================
+   TABLE WRAPPER — กล่องครอบตาราง
+   overflow-x:auto = เลื่อนซ้าย-ขวาได้ถ้าตารางกว้างเกิน
+   =================================================== */
+.tbl-wrap { overflow-x: auto; }
+
+/* ===================================================
+   TABLE — ตารางหลัก
+   border-collapse:collapse = ไม่มีช่องว่างระหว่าง cell
+   =================================================== */
+table { width: 100%; border-collapse: collapse; font-size: 14px; }
+
+/* HEADER ROW — แถวหัวตาราง */
+thead th {
+  background: var(--navy);
+  color: #fff; font-weight: 700;
+  padding: 11px 10px;
+  text-align: right; white-space: nowrap;
+  border-bottom: 2px solid var(--blue);
+  cursor: pointer; user-select: none;
+  font-size: 17px;
+  position: sticky; top: 0; z-index: 2;  /* ติดด้านบนเมื่อเลื่อน scroll */
+}
+thead th.left   { text-align: left; }
+thead th.center { text-align: center; }
+thead th:hover  { background: var(--blue); }
+.sort-arrow { font-size: 13px; margin-left: 3px; opacity: 0.35; }
+.sort-active .sort-arrow { opacity: 1; color: #ffd700; font-size: 18px;}
+
+/* เส้นแบ่งกลุ่มคอลัมน์ */
+thead th.grp-l { border-left: 2px solid rgba(255,255,255,0.2); }
+tbody td.grp-l { border-left: 1px solid var(--gray-100); }
+
+/* BODY ROWS — แถวข้อมูล */
+tbody tr { border-bottom: 1px solid var(--gray-100); transition: background 0.1s; }
+tbody tr:last-child { border-bottom: none; }
+tbody tr:hover { background: #eef4fc; }
+tbody tr.has-update { background: #edfcf2; }
+tbody tr.has-update:hover { background: #d6f5e3; }
+
+/* แถวที่ถูกเลือก (tick checkbox) */
+tbody tr.selected-row { background: #dbeafe !important; }
+tbody tr.selected-row:hover { background: #bfdbfe !important; }
+
+/* TD — ข้อมูลในแต่ละช่อง */
+td {
+  padding: 9px 10px; text-align: right;
+  color: var(--text); white-space: nowrap;
+  vertical-align: middle; font-weight: 600;
+  font-size: 15px;
+}
+td.left   { text-align: left; }
+td.center { text-align: center; }
+
+/* CHECKBOX COLUMN */
+td.col-check, th.col-check { text-align: center; padding: 6px 8px; width: 36px; }
+input[type="checkbox"] { cursor: pointer; accent-color: var(--blue); width: 15px; height: 15px; }
+
+/* DATA STYLE CLASSES — class สำหรับสีพิเศษของข้อมูล */
+td.so       { font-weight: 700; color: var(--navy); font-size: 15px; }
+td.item     { font-weight: 700; color: var(--navy); }
+td.price-col  { color: var(--navy); }
+td.num        { color: var(--navy); }
+td.sale-val   { font-weight: 700; color: var(--navy); }
+.deposit-qty  { font-weight: 800; color: var(--red); }
+.deposit-val  { font-weight: 700; color: var(--red); }
+.stored-qty   { font-weight: 800; color: var(--orange); }
+td.profit-neg { color: var(--red); font-weight: 800; }
+
+/* update badge เล็กๆ ข้างตัวเลข */
+.delta-in {
+  font-size: 10px; font-weight: 700; color: #155724;
+  background: #d1f7dc; border-radius: 4px;
+  padding: 1px 5px; display: inline-block; margin-right: 3px;
+}
+.update-inline {
+  font-size: 10px; font-weight: 600; color: #155724;
+  background: #d1f7dc; border-radius: 4px;
+  padding: 1px 5px; display: inline-block; margin-left: 4px;
+}
+span.dim { color: var(--gray-200); font-weight: 400; }
+
+/* STATUS BADGE — ป้ายสถานะ */
+.badge {
+  display: inline-block; border-radius: 5px;
+  font-size: 14px; font-weight: 700; padding: 3px 10px;
+  white-space: nowrap; letter-spacing: 0.02em;
+}
+.badge-ready   { background: #2563a8; color: #fff; }
+.badge-abroad  { background: #fee2e2; color: #991b1b; border: 1px solid #fca5a5; }
+.badge-partial { background: var(--gray-100); color: var(--gray-700); }
+.badge-stored  { background: #fff3cd; color: #856404; border: 1px solid #ffc107; }
+
+/* ===================================================
+   FOOTER — แถวรวมยอดด้านล่างตาราง
+   =================================================== */
+tfoot tr { background: #eef3fb; border-top: 2px solid var(--blue); }
+tfoot td {
+  padding: 10px 10px; font-weight: 800;
+  color: var(--navy); font-size: 17px;
+  text-align: right; white-space: nowrap;
+}
+tfoot td.left { text-align: left; }
+tfoot td.total-sale   { color: var(--navy); }
+tfoot td.total-inv    { color: var(--red); }
+tfoot td.total-profit { color: var(--green); }
+tfoot td.total-profit-neg { color: var(--red); }
+
+/* ===================================================
+   COMPUTED CELL — คอลัมน์ที่คำนวณอัตโนมัติ
+   แสดงไอคอน ⚡ เล็กๆ ให้รู้ว่าคำนวณจากสูตร
+   =================================================== */
+
+/* ===================================================
+   RESPONSIVE — ปรับขนาดบนมือถือ
+   @media = "ถ้าหน้าจอกว้างไม่เกิน X px ให้ใช้ style นี้"
+   =================================================== */
+@media (max-width: 768px) {
+  body { padding: 0.8rem; font-size: 14px; }
+  .toolbar input#searchInput { width: 100%; }
+  .page-title { font-size: 18px; }
+}
+
+/* ===================================================
+   SELECTED FOOTER — แถบสรุปรายการที่เลือก (sticky)
+   position:sticky ติดด้านล่างหน้าจอเสมอ
+   =================================================== */
+.selected-footer {
+  position: sticky; bottom: 0;
+  background: linear-gradient(135deg, var(--navy), var(--blue));
+  color: #fff;
+  padding: 12px 24px;
+  display: flex; align-items: center; gap: 20px; flex-wrap: wrap;
+  box-shadow: 0 -4px 20px rgba(27,58,92,0.25);
+  border-radius: 16px 14px 0 0;
+  font-size: 13px; font-weight: 600;
+  transition: all 0.2s;
+}
+.selected-footer.hidden { display: none; }
+.sel-footer-title { font-weight: 800; font-size: 14px; opacity: 0.85; } /*รายการที่เลือก*/
+.sel-footer-items { display: flex; gap: 24px; flex-wrap: wrap; }
+.sel-footer-item { text-align: right; }
+.sel-footer-item .lbl { font-size: 13px; opacity: 0.7; display: block; }
+.sel-footer-item .val { font-size: 17px; font-weight: 800; }
+.val-red    { color: #fca5a5; }
+.val-yellow { color: #fde68a; }
+.val-white  { color: #fff; }
+.btn-clear {
+  margin-left: auto;
+  background: rgba(255,255,255,0.15); border: 1.5px solid rgba(255,255,255,0.35);
+  color: #fff; font-family: 'Sarabun', sans-serif;
+  font-size: 14px; font-weight: 700;
+  padding: 5px 16px; border-radius: 20px;
+  cursor: pointer; transition: all 0.15s;
+}
+.btn-clear:hover { background: rgba(255,255,255,0.3); }
 </style>
 </head>
-<body>
-<h2>ALL POWER Group Dashboard — UPDATE 30-04-2026</h2>
 
+<body>
+
+<!-- ===================================================
+     PAGE HEADER — หัวเรื่อง
+     =================================================== -->
+<div class="page-header">
+  <div>
+    <div class="page-title">ALL POWER Group Dashboard</div>
+    <div class="page-subtitle">อัปเดต 1 พฤษภาคม 2026</div>
+  </div>
+</div>
+
+<!-- ===================================================
+     KPI CARDS — สรุปข้อมูลด้านบน
+     id="summaryGrid" คือ JavaScript จะมาใส่ข้อมูลตรงนี้
+     =================================================== -->
 <div class="summary-grid" id="summaryGrid"></div>
 
-<div class="filters">
-  <input type="text" id="searchInput" placeholder="ค้นหา SO / Item / Sales Co." />
-  <select id="filterStatus">
-    <option value="">สถานะ</option>
-    <option value="abroad">ตปท.</option>
-    <option value="partial">บางส่วน</option>
-    <option value="ready">พร้อมส่ง</option>
-  </select>
-  <select id="filterSales">
-    <option value="">Sales Co.</option>
-    <option value="Papitchaya">Papitchaya</option>
-    <option value="Jureemas">Jureemas</option>
-    <option value="Patcharaporn">Patcharaporn</option>
-  </select>
-  <span id="rowCount"></span>
+<!-- ===================================================
+     MAIN PANEL — กล่องหลักครอบตาราง
+     =================================================== -->
+<div class="panel">
+
+  <!-- PANEL HEADER -->
+  
+
+  <!-- COLUMN TOGGLE — ปุ่มซ่อน/แสดงคอลัมน์ -->
+  <div class="col-toggle-bar">
+    <span class="label">ซ่อน ▸</span>
+    <button class="col-btn" data-col="salePrice">Unit Price</button>
+    <button class="col-btn" data-col="saleAmt">Amount </button>
+    <button class="col-btn" data-col="order">QTY.</button>
+    <button class="col-btn" data-col="deposit">รอ INV.</button>
+    <button class="col-btn" data-col="depositVal">มูลค่า </button>
+    <button class="col-btn" data-col="inv">INV.</button>
+    <button class="col-btn" data-col="stored">ฝากของ</button>
+    <button class="col-btn" data-col="remain">ตปท. </button>
+    <button class="col-btn" data-col="status">สถานะ</button>
+    <button class="col-btn" data-col="salesco">Sales Co.</button>
+    <button class="col-btn" data-col="costPrice" >ต้นทุน/ชิ้น</button>
+    <button class="col-btn" data-col="costAmt" >ยอดต้นทุน</button>
+    <button class="col-btn" data-col="profit">กำไร</button>
+  </div>
+
+  <!-- FILTER BAR — ค้นหา + dropdown กรอง -->
+  <div class="panel-body" style="padding-bottom:12px;">
+    <div class="toolbar">
+      <input type="text" id="searchInput" placeholder="🔍  ค้นหา SO / Item / Sales Co. — กด Enter เพิ่ม Tag"/>
+      <select id="filterStatus">
+        <option value="">📊 สถานะทั้งหมด</option>
+        <option value="abroad">ตปท.</option>
+        <option value="ready">พร้อมส่ง</option>
+    
+    
+      </select>
+      <select id="filterSales">
+        <option value="">👤 Sales Co. ทั้งหมด</option>
+        <option value="Papitchaya">Papitchaya</option>
+        <option value="Jureemas">Jureemas</option>
+        <option value="Patcharaporn">Patcharaporn</option>
+      </select>
+    </div>
+    <!-- TAG BAR — แสดงคำค้นหาที่เพิ่มไว้ -->
+    <div class="tag-bar" id="tagBar"></div>
+  </div>
+
+  <!-- ===================================================
+       TABLE — ตารางแสดงข้อมูล
+       =================================================== -->
+  <div class="tbl-wrap">
+    <table>
+      <thead>
+        <tr id="headerRow">
+          <!-- th.col-check = คอลัมน์ checkbox เลือกทั้งหมด -->
+          <th class="col-check center">
+            <input type="checkbox" id="checkAll" title="เลือกทั้งหมด"/>
+          </th>
+          <th class="left"   style="min-width:92px"  data-col="so">Sales Order <span class="sort-arrow">↕</span></th>
+          <th class="left"   style="min-width:115px" data-col="item">Item <span class="sort-arrow">↕</span></th>
+          <th data-th="salePrice"  style="min-width:80px"  data-col="salePrice">Unit Price <span class="sort-arrow">↕</span></th>
+          <th data-th="costPrice"  style="min-width:80px"  data-col="costPrice">ต้นทุน/ชิ้น <span class="sort-arrow">↕</span></th>
+          <!-- ⚡ = คอลัมน์คำนวณอัตโนมัติ (Unit Price × QTY.) -->
+          <th data-th="saleAmt"    style="min-width:120px" data-col="saleAmt">Amount<span class="calc-tag" title="คำนวณจาก Unit Price × QTY."></span> <span class="sort-arrow">↕</span></th>
+          <th data-th="costAmt"    style="min-width:115px" data-col="costAmt">ยอดต้นทุน <span class="sort-arrow">↕</span></th>
+          <th data-th="profit"     style="min-width:110px" data-col="profit">กำไร <span class="sort-arrow">↕</span></th>
+          <th data-th="order"      style="min-width:58px"  data-col="order">QTY. <span class="sort-arrow">↕</span></th>
+          <th data-th="deposit"    class="grp-l" style="min-width:60px" data-col="deposit">รอ INV. <span class="sort-arrow">↕</span></th>
+          <!-- ⚡ = Unit Price × รอ INV. -->
+          <th data-th="depositVal" style="min-width:110px" data-col="depositVal">มูลค่า<span class="calc-tag" title="คำนวณจาก Unit Price × รอ INV."></span> <span class="sort-arrow">↕</span></th>
+          <th data-th="inv"        class="grp-l" style="min-width:55px"  data-col="inv">INV. <span class="sort-arrow">↕</span></th>
+          <th data-th="stored"     style="min-width:68px"  data-col="stored">ฝากของ <span class="sort-arrow">↕</span></th>
+          <!-- ⚡ = QTY. - รอ INV. - INV. -->
+          <th data-th="remain"     class="grp-l" style="min-width:60px"  data-col="remain">ตปท.<span class="calc-tag" title="คำนวณจาก QTY. − รอ INV. − INV."></span> <span class="sort-arrow">↕</span></th>
+          <th data-th="status"     class="grp-l" style="min-width:85px"  data-col="status">สถานะ <span class="sort-arrow">↕</span></th>
+          <th data-th="salesco"    class="left"  style="min-width:95px"  data-col="salesco">Sales Co. <span class="sort-arrow">↕</span></th>
+        </tr>
+      </thead>
+      <!-- tbody = JavaScript จะมาใส่แถวข้อมูลตรงนี้ -->
+      <tbody id="tableBody"></tbody>
+      <!-- tfoot = JavaScript จะมาใส่แถวรวมยอดตรงนี้ -->
+      <tfoot id="tableFoot"></tfoot>
+    </table>
+  </div>
+</div><!-- end .panel -->
+
+<!-- ===================================================
+     SELECTED FOOTER — แถบสรุปรายการที่เลือก
+     position:sticky ติดล่างหน้าจอเสมอ
+     class="hidden" = ซ่อนไว้ก่อน จนกว่าจะมีการเลือก
+     =================================================== -->
+<div class="selected-footer hidden" id="selectedFooter">
+  <span class="sel-footer-title"></span>
+  <div class="sel-footer-items">
+    <div class="sel-footer-item">
+      <span class="lbl">จำนวนรายการ</span>
+      <span class="val val-white" id="selCount">0</span>
+    </div>
+    <div class="sel-footer-item">
+      <span class="lbl">Amount รวม</span>
+      <span class="val val-yellow" id="selAmount">-</span>
+    </div>
+    <div class="sel-footer-item">
+      <span class="lbl">มูลค่า รวม</span>
+      <span class="val val-red" id="selDepositVal">-</span>
+    </div>
+    
+  </div>
+  <button class="btn-clear" id="btnClearSel">✕ ล้างการเลือก</button>
 </div>
 
-<div class="tbl-wrap">
-  <table>
-    <thead>
-      <tr>
-        <th class="left" style="min-width:88px"  data-col="so">Sales Order <span class="sort-arrow">↕</span></th>
-        <th style="min-width:145px; text-align:center" data-col="po">ยอดรวม PO (ก่อน VAT) <span class="sort-arrow">↕</span></th>
-        <th class="left" style="min-width:120px" data-col="item">Item <span class="sort-arrow">↕</span></th>
-        <th style="min-width:55px"  data-col="order">Order <span class="sort-arrow">↕</span></th>
-        <th style="min-width:90px"  data-col="deposit" class="grp-l">รอเปิด INV <span class="sort-arrow">↕</span></th>
-        <th style="min-width:115px" data-col="depositVal">มูลค่า <span class="sort-arrow">↕</span></th>
-        <th style="min-width:55px"  data-col="inv" class="grp-l">INV <span class="sort-arrow">↕</span></th>
-        <th style="min-width:65px"  data-col="stored">ฝากของ <span class="sort-arrow">↕</span></th>
-        <th style="min-width:55px"  data-col="remain" class="grp-l">ตปท. <span class="sort-arrow">↕</span></th>
-        <th style="min-width:80px"  data-col="status" class="grp-l">สถานะ <span class="sort-arrow">↕</span></th>
-        <th class="left" style="min-width:90px" data-col="salesco">Sales Co. <span class="sort-arrow">↕</span></th>
-      </tr>
-    </thead>
-    <tbody id="tableBody"></tbody>
-  </table>
-</div>
-
+<!-- ===================================================
+     JAVASCRIPT — โค้ดควบคุมการทำงานทั้งหมด
+     =================================================== -->
 <script>
+/* ===================================================
+   DATA — ข้อมูลดิบ (raw data)
+   แต่ละ Object {} = 1 รายการ Sales Order
+   ===================================================
 
-/* ================= DATA ================= */
-/*  depositIn = จำนวนที่เพิ่งเข้ามาใหม่ในรอบนี้ (แสดงเป็น +N )
-    stored    = จำนวนชิ้นฝากไว้ที่โกดัง (คอลัมน์ใหม่ข้างๆ INV)  */
-const /* const = ตัวแปรค่าคงที่ (แก้ค่าไม่ได้) */
- raw = [
-  {so:"SC-208618", po:2734800,  item:"DMG7000/M1",  order:110,  deposit:47,  depositVal:313960,   inv:63,  stored:0, remain:0,    depositIn:0,   salesco:"Papitchaya"},
-  {so:"SC-209277", po:81055,    item:"SA1F34A275F",  order:5,    deposit:0,   depositVal:0,        inv:0,   stored:0, remain:5,    depositIn:0,   salesco:"Papitchaya"},
-  {so:"SC-211915", po:2523500,  item:"DMR121",       order:230,  deposit:200, depositVal:290000,   inv:0,   stored:0, remain:30,   depositIn:0,   salesco:"Papitchaya"},
-  {so:"SC-211915", po:2523500,  item:"DMG615",       order:300,  deposit:10,  depositVal:42000,    inv:290, stored:0, remain:0,    depositIn:0,   salesco:"Papitchaya"},
-  {so:"SC-212353", po:1087500,  item:"DMG800/M12",   order:150,  deposit:125, depositVal:906250,   inv:25,  stored:0, remain:0,    depositIn:0,   salesco:"Jureemas"},
-  {so:"SC-214374", po:44157,    item:"DM0T0050",     order:105,  deposit:0,   depositVal:0,        inv:30,  stored:0, remain:75,   depositIn:0,   salesco:"Papitchaya"},
-  {so:"SC-214374", po:44157,    item:"DM0T0060",     order:12,   deposit:0,   depositVal:0,        inv:0,   stored:0, remain:12,   depositIn:0,   salesco:"Papitchaya"},
-  {so:"SC-214374", po:44157,    item:"DM0T0080",     order:3,    deposit:0,   depositVal:0,        inv:0,   stored:0, remain:3,    depositIn:0,   salesco:"Papitchaya"},
-  {so:"SC-214374", po:44157,    item:"DM0T0100",     order:3,    deposit:0,   depositVal:0,        inv:0,   stored:0, remain:3,    depositIn:0,   salesco:"Papitchaya"},
-  {so:"SC-214428", po:2450000,  item:"DMG9000",      order:100,  deposit:93,  depositVal:2278500,  inv:7,   stored:0, remain:0,    depositIn:0,   salesco:"Patcharaporn"},
-  {so:"SC-214864", po:9960000,  item:"DMG110",       order:2000, deposit:344, depositVal:1393200,  inv:10,   stored:0, remain:1646, depositIn:0,   salesco:"Papitchaya"},
-  {so:"SC-214864", po:9960000,  item:"DMED121",       order:600, deposit:0,   depositVal:0,        inv:80,  stored:0, remain:520,  depositIn:0,   salesco:"Papitchaya"},
-   {so:"SC-214878", po:74400,    item:"DMT525-40-3",  order:24,   deposit:9,   depositVal:27900,    inv:12,  stored:0, remain:3,    depositIn:0,   salesco:"Papitchaya"},
-  {so:"SC-214882", po:14355,    item:"GA063SAET6",   order:5,    deposit:0,   depositVal:0,        inv:0,   stored:0, remain:5,    depositIn:0,   salesco:"Papitchaya"},
-  {so:"SC-214882", po:14355,    item:"GAX5001",      order:1,    deposit:0,   depositVal:0,        inv:0,   stored:0, remain:1,    depositIn:0,   salesco:"Papitchaya"},
-  {so:"SC-215045", po:5100000,  item:"DMG510",       order:800,  deposit:451, depositVal:1127500,  inv:100, stored:0, remain:249,  depositIn:0, salesco:"Patcharaporn"},
-  {so:"SC-215045", po:5100000,  item:"DMG615",       order:1000, deposit:112, depositVal:347200,   inv:0,   stored:0, remain:888,  depositIn:0,   salesco:"Patcharaporn"},
-  {so:"SC-215127", po:213000,   item:"DCRL8",        order:30,   deposit:0,   depositVal:0,        inv:0,   stored:0, remain:30,   depositIn:0,   salesco:"Papitchaya"},
-  {so:"SC-215127", po:213000,   item:"EXP1006",      order:30,   deposit:0,   depositVal:0,        inv:0,   stored:0, remain:30,   depositIn:0,   salesco:"Papitchaya"},
-  {so:"SC-215358", po:12500,    item:"PAX2A000",     order:1,    deposit:1,   depositVal:12500,    inv:0,   stored:0, remain:0,    depositIn:0,   salesco:"Patcharaporn"},
-  {so:"SC-215433", po:1215,     item:"DM0T0050",     order:3,    deposit:0,   depositVal:0,        inv:0,   stored:0, remain:3,    depositIn:0,   salesco:"Patcharaporn"},
-  {so:"SC-215474", po:31590,    item:"DM0T0050",     order:69,   deposit:0,   depositVal:0,        inv:0,   stored:0, remain:69,   depositIn:0,   salesco:"Papitchaya"},
-  {so:"SC-215474", po:31590,    item:"DM0T0060",     order:3,    deposit:0,   depositVal:0,        inv:0,   stored:0, remain:3,    depositIn:0,   salesco:"Papitchaya"},
-  {so:"SC-215474", po:31590,    item:"DM0T0080",     order:3,    deposit:0,   depositVal:0,        inv:0,   stored:0, remain:3,    depositIn:0,   salesco:"Papitchaya"},
-  {so:"SC-215474", po:31590,    item:"DM0T0100",     order:3,    deposit:3,   depositVal:1215,     inv:0,   stored:0, remain:0,    depositIn:0,   salesco:"Papitchaya"},
-  {so:"SC-215476", po:74263.20, item:"ATL610",       order:4,    deposit:4,   depositVal:74263.20, inv:0,   stored:0, remain:0,    depositIn:0,   salesco:"Jureemas"},
-  {so:"SC-215486", po:177600,   item:"DMT400-50-3",  order:48,   deposit:31,  depositVal:114700,   inv:0,   stored:0, remain:17,   depositIn:0,   salesco:"Papitchaya"},
-  {so:"SC-215491", po:3660.80,  item:"GAZ016",       order:4,    deposit:0,   depositVal:0,        inv:3,   stored:0, remain:1,    depositIn:0,   salesco:"Patcharaporn"},
-  {so:"SC-215573", po:77780,    item:"GAZ016",       order:50,   deposit:0,   depositVal:0,        inv:0,   stored:0, remain:50,   depositIn:0,   salesco:"Papitchaya"},
-  {so:"SC-215573", po:77780,    item:"GAX1011A",     order:50,   deposit:0,   depositVal:0,        inv:0,   stored:0, remain:50,   depositIn:0,   salesco:"Papitchaya"},
-  {so:"SC-215573", po:77780,    item:"GAX1020A",     order:50,   deposit:0,   depositVal:0,        inv:0,   stored:0, remain:50,   depositIn:0,   salesco:"Papitchaya"},
-  {so:"SC-215671", po:9720,     item:"DM0T0050",     order:24,   deposit:0,   depositVal:0,        inv:0,   stored:0, remain:24,   depositIn:0,   salesco:"Jureemas"},
-  {so:"SC-216009", po:9300,     item:"DMT525-40-3",  order:3,    deposit:0,   depositVal:0,        inv:0,   stored:0, remain:3,    depositIn:0,   salesco:"Papitchaya"},
+   โครงสร้าง Object:
+   so         = รหัส Sales Order (ข้อความ)
+   item       = ชื่อสินค้า (ข้อความ)
+   salePrice  = ราคาขาย/ชิ้น (ตัวเลข)
+   costPrice  = ราคาต้นทุน/ชิ้น (ตัวเลข หรือ null ถ้าไม่มีข้อมูล)
+   order      = จำนวน QTY. ทั้งหมด (ตัวเลข)
+   deposit    = จำนวนรอ INV. (ตัวเลข)
+   depositVal = มูลค่ารอ INV. — จะถูกคำนวณใหม่ใน COMPUTED section
+   inv        = จำนวนที่ออก INV. แล้ว (ตัวเลข)
+   stored     = จำนวนฝากของ (ตัวเลข)
+   remain     = ตปท. — จะถูกคำนวณใหม่ใน COMPUTED section
+   depositIn  = จำนวนที่รับเพิ่มล่าสุด (ใส่ badge update)
+   update     = ข้อความ update
+   salesco    = ชื่อ Sales Co.
+   =================================================== */
+const raw = [
+  {so:"SC-208618", item:"DMG7000/M1",  salePrice:24873, costPrice:null, order:110,  deposit:0,  depositVal:0, inv:110,  stored:47, depositIn:0, update:"", salesco:"Papitchaya"},
+  {so:"SC-209277", item:"SA1F34A275F", salePrice:16211, costPrice:null, order:5,    deposit:0,   depositVal:0, inv:0,   stored:0, depositIn:0, update:"", salesco:"Papitchaya"},
+  {so:"SC-211915", item:"DMR121",      salePrice:1450,  costPrice:null, order:230,  deposit:0, depositVal:0, inv:200,   stored:200, depositIn:0, update:"", salesco:"Papitchaya"},
+  {so:"SC-211915", item:"DMG615",      salePrice:4200,  costPrice:null, order:300,  deposit:10,  depositVal:0, inv:290, stored:0, depositIn:0, update:"", salesco:"Papitchaya"},
+  {so:"SC-212353", item:"DMG800/M12",  salePrice:7250,  costPrice:null, order:150,  deposit:125, depositVal:0, inv:25,  stored:0, depositIn:0, update:"", salesco:"Jureemas"},
+  {so:"SC-214374", item:"DM0T0050",    salePrice:359,   costPrice:null, order:105,  deposit:0,   depositVal:0, inv:30,  stored:0, depositIn:0, update:"", salesco:"Papitchaya"},
+  {so:"SC-214374", item:"DM0T0060",    salePrice:359,   costPrice:null, order:12,   deposit:0,   depositVal:0, inv:0,   stored:0, depositIn:0, update:"", salesco:"Papitchaya"},
+  {so:"SC-214374", item:"DM0T0080",    salePrice:359,   costPrice:null, order:3,    deposit:0,   depositVal:0, inv:0,   stored:0, depositIn:0, update:"", salesco:"Papitchaya"},
+  {so:"SC-214374", item:"DM0T0100",    salePrice:359,   costPrice:null, order:3,    deposit:0,   depositVal:0, inv:0,   stored:0, depositIn:0, update:"", salesco:"Papitchaya"},
+  {so:"SC-214428", item:"DMG9000",     salePrice:24500, costPrice:null, order:100,  deposit:93,  depositVal:0, inv:7,   stored:0, depositIn:0, update:"", salesco:"Patcharaporn"},
+  {so:"SC-214864", item:"DMG110",      salePrice:4050,  costPrice:null, order:2000, deposit:144, depositVal:0, inv:210,  stored:200, depositIn:0, update:"", salesco:"Papitchaya"},
+  {so:"SC-214864", item:"DMED121",     salePrice:3100,  costPrice:null, order:600,  deposit:0,   depositVal:0, inv:80,  stored:0, depositIn:0, update:"", salesco:"Papitchaya"},
+  {so:"SC-214878", item:"DMT525-40-3", salePrice:3100,  costPrice:null, order:24,   deposit:9,   depositVal:0, inv:12,  stored:0, depositIn:0, update:"", salesco:"Papitchaya"},
+  {so:"SC-214882", item:"GA063SAET6",  salePrice:2708,  costPrice:null, order:5,    deposit:0,   depositVal:0, inv:0,   stored:0, depositIn:0, update:"", salesco:"Papitchaya"},
+  {so:"SC-214882", item:"GAX5001",     salePrice:814,   costPrice:null, order:1,    deposit:0,   depositVal:0, inv:0,   stored:0, depositIn:0, update:"", salesco:"Papitchaya"},
+  {so:"SC-215045", item:"DMG510",      salePrice:2500,  costPrice:null, order:800,  deposit:451, depositVal:0, inv:100, stored:0, depositIn:0, update:"", salesco:"Patcharaporn"},
+  {so:"SC-215045", item:"DMG615",      salePrice:3100,  costPrice:null, order:1000, deposit:112, depositVal:0, inv:0,   stored:0, depositIn:0, update:"", salesco:"Patcharaporn"},
+  {so:"SC-215127", item:"DCRL8",       salePrice:6000,  costPrice:null, order:30,   deposit:0,   depositVal:0, inv:0,   stored:0, depositIn:0, update:"", salesco:"Papitchaya"},
+  {so:"SC-215127", item:"EXP1006",     salePrice:1100,  costPrice:null, order:30,   deposit:0,   depositVal:0, inv:0,   stored:0, depositIn:0, update:"", salesco:"Papitchaya"},
+  {so:"SC-215358", item:"PAX2A000",    salePrice:12500, costPrice:null, order:1,    deposit:1,   depositVal:0, inv:0,   stored:0, depositIn:0, update:"", salesco:"Patcharaporn"},
+  {so:"SC-215433", item:"DM0T0050",    salePrice:405,   costPrice:null, order:3,    deposit:0,   depositVal:0, inv:0,   stored:0, depositIn:0, update:"", salesco:"Patcharaporn"},
+  {so:"SC-215474", item:"DM0T0050",    salePrice:405,   costPrice:null, order:69,   deposit:0,   depositVal:0, inv:0,   stored:0, depositIn:0, update:"", salesco:"Papitchaya"},
+  {so:"SC-215474", item:"DM0T0060",    salePrice:405,   costPrice:null, order:3,    deposit:0,   depositVal:0, inv:0,   stored:0, depositIn:0, update:"", salesco:"Papitchaya"},
+  {so:"SC-215474", item:"DM0T0080",    salePrice:405,   costPrice:null, order:3,    deposit:0,   depositVal:0, inv:0,   stored:0, depositIn:0, update:"", salesco:"Papitchaya"},
+  {so:"SC-215474", item:"DM0T0100",    salePrice:405,   costPrice:null, order:3,    deposit:0,   depositVal:0, inv:0,   stored:0, depositIn:0, update:"", salesco:"Papitchaya"},
+  {so:"SC-215476", item:"ATL610",      salePrice:18565, costPrice:null, order:4,    deposit:4,   depositVal:0, inv:0,   stored:0, depositIn:0, update:"", salesco:"Jureemas"},
+  {so:"SC-215486", item:"DMT400-50-3", salePrice:3700,  costPrice:null, order:48,   deposit:31,  depositVal:0, inv:0,   stored:0, depositIn:0, update:"", salesco:"Papitchaya"},
+  {so:"SC-215491", item:"GAZ016",      salePrice:915,   costPrice:null, order:4,    deposit:0,   depositVal:0, inv:3,   stored:0, depositIn:0, update:"", salesco:"Patcharaporn"},
+  {so:"SC-215573", item:"GAZ016",      salePrice:915,   costPrice:null, order:50,   deposit:0,   depositVal:0, inv:0,   stored:0, depositIn:0, update:"", salesco:"Papitchaya"},
+  {so:"SC-215573", item:"GAX1011A",    salePrice:312,   costPrice:null, order:50,   deposit:0,   depositVal:0, inv:0,   stored:0, depositIn:0, update:"", salesco:"Papitchaya"},
+  {so:"SC-215573", item:"GAX1020A",    salePrice:328,   costPrice:null, order:50,   deposit:0,   depositVal:0, inv:0,   stored:0, depositIn:0, update:"", salesco:"Papitchaya"},
+  {so:"SC-215671", item:"DM0T0050",    salePrice:405,   costPrice:null, order:24,   deposit:0,   depositVal:0, inv:0,   stored:0, depositIn:0, update:"", salesco:"Jureemas"},
+  {so:"SC-216009", item:"DMT525-40-3", salePrice:3100,  costPrice:null, order:3,    deposit:0,   depositVal:0, inv:0,   stored:0, depositIn:0, update:"", salesco:"Papitchaya"},
 ];
-/* ================= STATUS ================= */
-/* ฟังก์ชันคำนวณสถานะ */
+
+/* ===================================================
+   COMPUTED — คำนวณค่าอัตโนมัติ
+   forEach = วนลูปทุก element ใน array
+   r = ตัวแปรชั่วคราว แทนแต่ละ object ใน raw[]
+   ===================================================
+
+   สูตรที่ใช้:
+   1. saleAmt   = Unit Price (salePrice) × QTY. (order)
+   2. depositVal= Unit Price (salePrice) × รอ INV. (deposit)
+   3. remain    = QTY. (order) − รอ INV. (deposit) − INV. (inv)
+   4. costAmt   = ต้นทุน/ชิ้น × QTY. (ถ้ามีข้อมูลต้นทุน)
+   5. profit    = Amount − ยอดต้นทุน (ถ้ามีข้อมูลต้นทุน)
+   =================================================== */
+raw.forEach(r => {
+  /* 1. Amount = Unit Price × QTY. */
+  r.saleAmt   = r.salePrice * r.order;
+
+  /* 2. มูลค่า = Unit Price × รอ INV. */
+  r.depositVal = r.salePrice * r.deposit;
+
+  /* 3. ตปท. = QTY. − รอ INV. − INV.
+        Math.max(..., 0) = ไม่ให้ติดลบ กันกรณีข้อมูลผิดพลาด */
+  r.remain = Math.max(r.order - r.deposit - r.inv, 0);
+
+  /* 4. ยอดต้นทุน = ต้นทุน/ชิ้น × QTY. (null ถ้าไม่มีต้นทุน) */
+  r.costAmt = (r.costPrice != null) ? r.costPrice * r.order : null;
+
+  /* 5. กำไร = Amount − ยอดต้นทุน (null ถ้าไม่มีต้นทุน) */
+  r.profit  = (r.costAmt  != null) ? r.saleAmt - r.costAmt : null;
+});
+
+/* ===================================================
+   STATUS LOGIC — กำหนดสถานะแต่ละรายการ
+   ===================================================
+
+   เงื่อนไขสถานะ:
+   'stored'  = มีของฝาก (stored > 0) — เช็คก่อนเลย
+   'abroad'  = ตปท. (deposit=0 และ remain>0)
+   'ready'   = พร้อมส่ง (มี deposit อยู่)
+   'partial' = บางส่วน (มี inv แล้ว)
+   =================================================== */
 function getStatus(r) {
-  /* case 1: ตปท. */ /*  ความหมาย: ถ้า "ของทั้งหมดอยู่ต่างประเทศ" (remain = order) และยังไม่มี INV และยังไม่ deposit → สถานะ = abroad (ตปท.) */
-  if (r.remain === r.order && r.inv === 0 && r.deposit === 0) return 'abroad';
-
-  /* case 2: พร้อมส่ง */  /*  ความหมาย: ถ้าฝากของครบแล้ว และยังไม่ออก INV → พร้อมส่ง */
-  if (r.deposit >= r.order && r.inv === 0) return 'ready';
-
-  /* case 3: บางส่วน */ /* มี movement บางส่วน→ บางส่วน*/
-  if (r.inv > 0 || r.deposit > 0 || r.remain > 0) return 'partial';
-  return 'pending';
-
- /* || = OR (มีเงื่อนไขใดเงื่อนไขหนึ่งเป็นจริงก็พอ)*/
+  if (r.stored > 0)                   return 'ready';   /* มีฝากของ */
+  if (r.deposit === 0 && r.remain > 0) return 'abroad';  /* ตปท. */
+  if (r.deposit > 0)                  return 'ready';    /* พร้อมส่ง */
+  return 'partial';                                      /* บางส่วน / อื่นๆ */
 }
 
+/* ===================================================
+   FORMAT HELPERS — ฟังก์ชันแปลงตัวเลขให้อ่านง่าย
+   ===================================================
+   fmt(n)      = แสดงตัวเลขมี comma เช่น 1,234 หรือ "-" ถ้า 0
+   fmtMoney(n) = เหมือน fmt แต่มีทศนิยม 2 ตำแหน่ง
+   dash(n)     = แสดงตัวเลขหรือ "-" ถ้าเป็น 0
+   =================================================== */
+function fmt(n) {
+  /* toLocaleString = แปลงตัวเลขให้มี comma ตามรูปแบบไทย */
+  return (n != null && n !== 0) ? n.toLocaleString('th-TH') : '-';
+}
 
+function fmtMoney(n) {
+  if (n == null || n === 0) return '<span class="dim">-</span>';
+  /* minimumFractionDigits:2 = แสดงทศนิยม 2 ตำแหน่งเสมอ */
+  return n.toLocaleString('th-TH', {minimumFractionDigits:2, maximumFractionDigits:2});
+}
 
+function dash(n) {
+  /* Template literal (backtick) = ใส่ตัวแปรใน HTML string ด้วย ${} */
+  return (n != null && n > 0) ? `<span style="font-weight:700">${fmt(n)}</span>` : `<span class="dim">-</span>`;
+}
 
-/* ================= SORT ================= */
-let /* ตัวแปรที่เปลี่ยนค่าได้ */
-sortCol = 'depositVal', /* default column */
-sortDir = -1;        /* -1 = มาก → น้อย  */
+/* ===================================================
+   SORT STATE — จำว่ากำลัง sort คอลัมน์ไหน ทิศทางไหน
+   sortCol = ชื่อคอลัมน์ที่ sort อยู่
+   sortDir = 1 (น้อยไปมาก ↑) หรือ -1 (มากไปน้อย ↓)
+   =================================================== */
+let sortCol = 'depositVal';
+let sortDir = -1;
 
-/* ================= FORMAT ================= */
-function fmt(n)      { return (n != null && n !== 0) ? n.toLocaleString('th-TH') : '-'; }
+/* ===================================================
+   COLUMN VISIBILITY — ซ่อน/แสดงคอลัมน์
+   Set = โครงสร้างข้อมูลเหมือน Array แต่ไม่ซ้ำกัน
+   ค่าเริ่มต้น: ซ่อน 3 คอลัมน์นี้ไว้ก่อน
+   =================================================== */
+const hiddenCols = new Set(['costPrice', 'costAmt', 'profit','salePrice' , 'saleAmt' ]);
 
-/*  != ไม่เท่ากับ (แบบหลวม)
-    !== ไม่เท่ากับแบบ strict
-    ? ค่าเมื่อจริง : ค่าเมื่อเท็จ != ต้องไม่เป็น
-    return = ส่งค่าผลลัพธ์ออกจากฟังก์ชัน */
+/* ===================================================
+   SELECTED ROWS — เก็บรายการที่ถูก tick checkbox
+   Set เก็บ index ของ row ใน raw[] ที่ถูกเลือก
+   =================================================== */
+let selectedRows = new Set();
 
+/* ===================================================
+   SEARCH TAGS — เก็บคำค้นหาที่กด Enter เพิ่มไว้
+   =================================================== */
+let searchTags = [];
 
+/* ===================================================
+   DOM REFERENCES — ดึง element จาก HTML มาเก็บไว้
+   getElementById = หา element ด้วย id=""
+   =================================================== */
+const searchInput = document.getElementById('searchInput');
+const tagBar      = document.getElementById('tagBar');
 
-/* format เงิน */
-function fmtMoney(n) { return (n != null && n !== 0) ? n.toLocaleString('th-TH', {minimumFractionDigits:2, maximumFractionDigits:2}) : '-'; }
-/* ถ้าไม่มีค่า → "-" */
-function dash(n)     { return (n != null && n > 0)   ? `<span class="num" style="font-weight:600;color:#1b4965">${fmt(n)}</span>` : `<span class="dim">-</span>`; }
-/* ================= KPI ================= */
+/* ===================================================
+   renderSummary() — วาด KPI CARDS ด้านบน
+   คำนวณยอดรวมและนับสถานะจาก raw[] ทั้งหมด
+   =================================================== */
 function renderSummary() {
-  const counts = {abroad:0, partial:0, ready:0};
-  raw.forEach(r => { const s = getStatus(r); if (counts[s] !== undefined) counts[s]++; });
-  /*  forEach = loop ทุกตัวใน array
-     ++ = เพิ่มค่า +1   */
+  /* นับจำนวนรายการแต่ละสถานะ */
+  const counts = {abroad:0, partial:0, ready:0, stored:0};
+  raw.forEach(r => {
+    const s = getStatus(r);
+    if (counts[s] !== undefined) counts[s]++;
+  });
 
+  /* คำนวณยอดรวม Amount และ มูลค่ารอ INV. */
+  const totalSale    = raw.reduce((sum, r) => sum + (r.saleAmt    || 0), 0);
+  const totalWaitInv = raw.reduce((sum, r) => sum + (r.depositVal || 0), 0);
+
+  /* innerHTML = ใส่ HTML เข้าไปใน element */
   document.getElementById('summaryGrid').innerHTML = `
-    <div class="metric"><div class="metric-label">รายการทั้งหมด</div><div class="metric-value">${raw.length}</div></div>
-    <div class="metric"><div class="metric-label">ตปท.</div><div class="metric-value c-abroad">${counts.abroad}</div></div>
-    <div class="metric"><div class="metric-label">บางส่วน</div><div class="metric-value c-partial">${counts.partial}</div></div>
-    <div class="metric"><div class="metric-label">พร้อมส่ง</div><div class="metric-value c-ready">${counts.ready}</div></div>
+    <div class="metric m-total">
+      <div class="metric-label">รายการทั้งหมด</div>
+      <div class="metric-value c-blue">${raw.length}</div>
+      <div class="metric-sub"></div>
+    </div>
+    
+    
+    <div class="metric m-abroad">
+      <div class="metric-label">ตปท.</div>
+      <div class="metric-value c-red">${counts.abroad}</div>
+      <div class="metric-sub">รายการ</div>
+    </div>
+   
+
+    
+    <div class="metric m-total">
+      <div class="metric-label">พร้อมส่ง</div>
+      <div class="metric-value c-blue">${counts.ready}</div>
+      <div class="metric-sub">รายการ</div>
+    </div>
   `;
 }
 
+/* ===================================================
+   renderTags() — วาด Search Tags บน toolbar
+   =================================================== */
+function renderTags() {
+  /* map = แปลง array ของ string เป็น array ของ HTML string */
+  tagBar.innerHTML = searchTags.map((t, i) =>
+    `<span class="tag">${t} <span class="tag-x" data-i="${i}">×</span></span>`
+  ).join('');
 
-/* ================= TABLE ================= */
+  /* เพิ่ม event listener ให้ปุ่ม × ของแต่ละ tag */
+  tagBar.querySelectorAll('.tag-x').forEach(x => {
+    x.addEventListener('click', () => {
+      /* splice = ลบ element ออกจาก array ณ ตำแหน่ง i */
+      searchTags.splice(+x.dataset.i, 1);
+      renderTags();
+      renderTable();
+    });
+  });
+}
+
+/* ===================================================
+   updateSelectedFooter() — อัพเดต sticky footer
+   แสดงผลรวมของรายการที่ถูก tick checkbox
+   =================================================== */
+function updateSelectedFooter() {
+  const footer = document.getElementById('selectedFooter');
+
+  /* ถ้าไม่มีรายการที่เลือก ซ่อน footer */
+  if (selectedRows.size === 0) {
+    footer.classList.add('hidden');
+    return;
+  }
+
+  footer.classList.remove('hidden');
+
+  /* รวมยอดจากรายการที่เลือกเท่านั้น */
+  let sumAmount    = 0;
+  let sumDepositVal = 0;
+  let sumRemain    = 0;
+
+  /* วนลูปผ่าน Set ด้วย for...of */
+  for (const idx of selectedRows) {
+    const r = raw[idx];
+    sumAmount     += r.saleAmt    || 0;
+    sumDepositVal += r.depositVal || 0;
+    sumRemain     += r.remain     || 0;
+  }
+
+  /* อัพเดตตัวเลขใน footer */
+  document.getElementById('selCount').textContent     = selectedRows.size + ' รายการ';
+  document.getElementById('selAmount').textContent    = fmtMoney(sumAmount).replace(/<[^>]+>/g,'') + ' ฿';
+  document.getElementById('selDepositVal').textContent = fmtMoney(sumDepositVal).replace(/<[^>]+>/g,'') + ' ฿';
+  document.getElementById('selRemain').textContent    = fmt(sumRemain);
+}
+
+/* ===================================================
+   renderTable() — วาดตารางทั้งหมด
+   ฟังก์ชันหลักที่เรียกทุกครั้งที่ filter/sort เปลี่ยน
+   =================================================== */
 function renderTable() {
-    /* ดึงค่า filter */
-  const search       = document.getElementById('searchInput').value.toLowerCase(); /*toLowerCase() = แปลงเป็นตัวเล็ก*/
+  /* ดึงค่าจาก input/select ปัจจุบัน */
+  const liveSearch   = searchInput.value.trim().toLowerCase();
   const statusFilter = document.getElementById('filterStatus').value;
   const salesFilter  = document.getElementById('filterSales').value;
-/* filter */
-  let filtered = raw.filter(r => {
-    const matchSearch = r.so.toLowerCase().includes(search) || r.item.toLowerCase().includes(search) || r.salesco.toLowerCase().includes(search);   /* includes = มีคำนี้อยู่ไหม */
+
+  /* รวม tags ที่กด Enter ไว้แล้ว + keyword ที่พิมพ์อยู่ตอนนี้ */
+  const allKeywords = [...searchTags, ...(liveSearch ? [liveSearch] : [])];
+
+  /* ===================================================
+     FILTER — กรองข้อมูล
+     filter = คืน array ใหม่ที่มีเฉพาะรายการที่ผ่านเงื่อนไข
+     =================================================== */
+  let filtered = raw.filter((r, idx) => {
+    /* เช็คว่า keyword ตรงกับ so, item หรือ salesco */
+    const matchSearchOR = allKeywords.length === 0 || allKeywords.some(kw =>
+      r.so.toLowerCase().includes(kw) ||
+      r.item.toLowerCase().includes(kw) ||
+      r.salesco.toLowerCase().includes(kw)
+    );
     const matchStatus = !statusFilter || getStatus(r) === statusFilter;
     const matchSales  = !salesFilter  || r.salesco === salesFilter;
-    return matchSearch && matchStatus && matchSales;
+    return matchSearchOR && matchStatus && matchSales;
   });
-/* sort */
+
+  /* ===================================================
+     SORT — เรียงลำดับข้อมูล
+     sort = เรียง array ใหม่ตามเงื่อนไขที่กำหนด
+     a, b = สองรายการที่กำลังเปรียบเทียบกัน
+     sortDir * (...) = คูณด้วย 1 หรือ -1 เพื่อกลับทิศ
+     =================================================== */
   filtered.sort((a, b) => {
-    /* string ใช้ localeCompare */
     if (sortCol === 'salesco') return sortDir * a.salesco.localeCompare(b.salesco);
     if (sortCol === 'status')  return sortDir * getStatus(a).localeCompare(getStatus(b));
     if (sortCol === 'item')    return sortDir * a.item.localeCompare(b.item);
     if (sortCol === 'so')      return sortDir * a.so.localeCompare(b.so);
-    const key = {po:'po', order:'order', deposit:'deposit', depositVal:'depositVal', inv:'inv', stored:'stored', remain:'remain'}[sortCol] || sortCol;
-      /* number ใช้ลบกัน */
-    return sortDir * ((a[key] || 0) - (b[key] || 0));
+    /* สำหรับคอลัมน์ตัวเลข: ลบกันเพื่อเปรียบเทียบ */
+    return sortDir * ((a[sortCol] || 0) - (b[sortCol] || 0));
   });
 
-  document.getElementById('rowCount').textContent = `แสดง ${filtered.length} / ${raw.length} รายการ`;
+  /* อัพเดตตัวนับแถว */
 
+  /* ===================================================
+     BUILD ROWS — สร้าง HTML ของแต่ละแถว
+     map = แปลงแต่ละ object เป็น string HTML
+     join('') = รวม array ของ string เป็น string เดียว
+     =================================================== */
   const tbody = document.getElementById('tableBody');
-  tbody.innerHTML = filtered.map(r => {
+  tbody.innerHTML = filtered.map((r) => {
+
+    /* หา index จริงใน raw[] เพื่อใช้กับ selectedRows */
+    const rawIdx = raw.indexOf(r);
+    const isChecked = selectedRows.has(rawIdx);
+
+    /* สร้าง badge สถานะ */
     const s = getStatus(r);
     const badge =
       s === 'ready'   ? '<span class="badge badge-ready">พร้อมส่ง</span>' :
-      s === 'abroad'  ? '<span class="badge badge-abroad">ตปท.</span>'    :
-      s === 'partial' ? '<span class="badge badge-warn">บางส่วน</span>'   : '';
+      s === 'abroad'  ? '<span class="badge badge-abroad">ตปท.</span>'     :
+      s === 'partial' ? '<span class="badge badge-partial">บางส่วน</span>' :
+      s === 'stored'  ? '<span class="badge badge-stored">พร้อมส่ง</span>'   : '';
 
-    /* รอเปิด INV: ถ้ามี depositIn ให้แสดง +N สีเขียวไว้ทางซ้าย แล้วตามด้วยตัวเลขหลัก */
+    /* cell รอ INV. — แสดง badge update ถ้ามี depositIn */
     let depositCell;
     if (r.deposit > 0) {
-      const delta = r.depositIn > 0
-        ? `<span class="delta-in">${fmt(r.depositIn)}</span> `
-        : '';
-      depositCell = `${delta}<span class="deposit-qty">${fmt(r.deposit)}</span>`;
+      const delta = r.depositIn > 0 ? `<span class="delta-in">+${fmt(r.depositIn)}</span>` : '';
+      const upd   = r.update        ? `<span class="update-inline">${r.update}</span>` : '';
+      depositCell = `${delta}<span class="deposit-qty">${fmt(r.deposit)}</span>${upd}`;
     } else {
       depositCell = `<span class="dim">-</span>`;
     }
 
-    const depositValTd = r.depositVal > 0
-      ? `<span class="deposit-val">${fmtMoney(r.depositVal)}</span>`
+    /* cell มูลค่า — แดงถ้ามีค่า */
+    const depositValCell = r.depositVal > 0
+      ? `<span class="deposit-val">${fmtMoney(r.depositVal)} ฿</span>`
       : `<span class="dim">-</span>`;
 
+    /* cell ฝากของ — สีส้มถ้ามีค่า */
     const storedCell = r.stored > 0
       ? `<span class="stored-qty">${fmt(r.stored)}</span>`
       : `<span class="dim">-</span>`;
 
-    return `<tr>
+    /* class ของ tr — ถ้าเลือกแล้วใส่ selected-row */
+    const rowClass = isChecked ? 'selected-row' : (r.depositIn > 0 ? 'has-update' : '');
+
+    /* Return HTML string ของ 1 แถว
+       data-rawidx="${rawIdx}" เก็บ index ไว้ให้ checkbox ใช้ */
+    return `<tr class="${rowClass}" data-rawidx="${rawIdx}">
+      <td class="col-check center">
+        <input type="checkbox" class="row-check" data-idx="${rawIdx}" ${isChecked ? 'checked' : ''}/>
+      </td>
       <td class="so left">${r.so}</td>
-      <td class="po"><div style="display:inline-block;text-align:right;min-width:110px">${fmtMoney(r.po)} ฿</div></td>
       <td class="item left">${r.item}</td>
-      <td class="num">${fmt(r.order)}</td>
-      <td class="grp-l">${depositCell}</td>
-      <td >   <div style="display:inline-block;text-align:right;min-width:110px;color:#bc4b51;font-weight:550;">
-    ${r.depositVal > 0 ? fmtMoney(r.depositVal) + ' ฿' : '-'}</div></td>
-      <td class="grp-l">${dash(r.inv)}</td>
-      <td>${storedCell}</td>
-      <td class="grp-l">${dash(r.remain)}</td>
-      <td class="grp-l">${badge}</td>
-      <td class="salesco left">${r.salesco}</td>
+      <td class="price-col" data-td="salePrice">${fmt(r.salePrice)} ฿</td>
+      <td class="price-col" data-td="costPrice" style="color:#8a7060">
+        ${r.costPrice != null ? fmt(r.costPrice)+' ฿' : '<span class="dim">-</span>'}
+      </td>
+      <!-- Amount = คำนวณจาก salePrice × order แล้ว (ใน COMPUTED) -->
+      <td class="sale-val" data-td="saleAmt">${fmtMoney(r.saleAmt)} ฿</td>
+      <td data-td="costAmt">
+        ${r.costAmt != null && r.costAmt > 0 ? fmtMoney(r.costAmt)+' ฿' : '<span class="dim">-</span>'}
+      </td>
+      <td data-td="profit">
+        ${r.profit == null ? '<span class="dim">-</span>' :
+          r.profit > 0 ? `<span style="color:#1a7a4a;font-weight:700">${fmtMoney(r.profit)} ฿</span>` :
+          r.profit < 0 ? `<span class="profit-neg">${fmtMoney(r.profit)} ฿</span>` :
+          '<span class="dim">-</span>'}
+      </td>
+      <td class="num" data-td="order">${fmt(r.order)}</td>
+      <td class="grp-l" data-td="deposit">${depositCell}</td>
+      <!-- มูลค่า = คำนวณจาก salePrice × deposit แล้ว -->
+      <td data-td="depositVal">${depositValCell}</td>
+      <td class="grp-l" data-td="inv">${dash(r.inv)}</td>
+      <td data-td="stored">${storedCell}</td>
+      <!-- ตปท. = คำนวณจาก order - deposit - inv แล้ว -->
+      <td class="grp-l" data-td="remain">${dash(r.remain)}</td>
+      <td class="grp-l" data-td="status">${badge}</td>
+      <td class="salesco left" data-td="salesco">${r.salesco}</td>
     </tr>`;
   }).join('');
+
+  /* ===================================================
+     FOOTER TOTALS — คำนวณผลรวมของแถวที่แสดงอยู่
+     reduce = วนลูป array แล้วสะสมค่า (คล้าย sum)
+     =================================================== */
+  const tSale    = filtered.reduce((s, r) => s + (r.saleAmt    || 0), 0);
+  const tWaitInv = filtered.reduce((s, r) => s + (r.depositVal || 0), 0);
+  const tRemain  = filtered.reduce((s, r) => s + (r.remain     || 0), 0);
+  const tOrder   = filtered.reduce((s, r) => s + (r.order      || 0), 0);
+  const tInv     = filtered.reduce((s, r) => s + (r.inv        || 0), 0);
+
+  const tCost    = filtered.every(r => r.costAmt == null) ? null
+                 : filtered.reduce((s, r) => s + (r.costAmt || 0), 0);
+  const tProfit  = tCost != null ? tSale - tCost : null;
+  const profitClass = tProfit == null ? '' : tProfit >= 0 ? 'total-profit' : 'total-profit-neg';
+
+  document.getElementById('tableFoot').innerHTML = `<tr>
+    <td></td>
+    <td class="left" colspan="2" style="font-weight:800;color:#1b3a5c;font-size:17px">รวมทั้งหมด ${filtered.length} รายการ</td>
+    <td data-td="salePrice"></td>
+    <td data-td="costPrice"></td>
+    <td class="total-sale" data-td="saleAmt">${fmtMoney(tSale)} ฿</td>
+    <td class="total-cost" data-td="costAmt">${tCost != null ? fmtMoney(tCost)+' ฿' : '<span class="dim">-</span>'}</td>
+    <td class="${profitClass}" data-td="profit">${tProfit != null ? fmtMoney(tProfit)+' ฿' : '<span class="dim">-</span>'}</td>
+    <td data-td="order" style="font-weight:800">${fmt(tOrder)}</td>
+    <td class="grp-l" data-td="deposit"></td>
+    <td class="total-inv" data-td="depositVal">${fmtMoney(tWaitInv)} ฿</td>
+    <td class="grp-l" data-td="inv" style="font-weight:800">${fmt(tInv)}</td>
+    <td data-td="stored"></td>
+    <td class="grp-l" data-td="remain" style="font-weight:800;color:#c0392b">${fmt(tRemain)}</td>
+    <td class="grp-l" data-td="status"></td>
+    <td data-td="salesco"></td>
+  </tr>`;
+
+  /* เรียก applyColVisibility หลังวาดตารางเสมอ */
+  applyColVisibility();
+
+  /* เพิ่ม event สำหรับ checkbox แต่ละแถว */
+  bindRowCheckboxes();
 }
-/* ================= EVENT ================= */
-/* เมื่อพิมพ์หรือเลือก filter → refresh */
-['searchInput','filterStatus','filterSales'].forEach(id =>
-  document.getElementById(id).addEventListener('input', renderTable)
-);
-/* click header = sort */
+
+/* ===================================================
+   bindRowCheckboxes() — ผูก event กับ checkbox
+   เรียกหลัง render ทุกครั้ง เพราะ tbody ถูกสร้างใหม่
+   =================================================== */
+function bindRowCheckboxes() {
+  document.querySelectorAll('.row-check').forEach(cb => {
+    cb.addEventListener('change', () => {
+      const idx = +cb.dataset.idx; /* + แปลง string เป็น number */
+      if (cb.checked) {
+        selectedRows.add(idx);
+      } else {
+        selectedRows.delete(idx);
+      }
+      /* อัพเดต style ของแถว */
+      const tr = cb.closest('tr');
+      tr.classList.toggle('selected-row', cb.checked);
+      /* อัพเดต checkAll checkbox */
+      syncCheckAll();
+      updateSelectedFooter();
+    });
+  });
+}
+
+/* ===================================================
+   syncCheckAll() — อัพเดต checkbox "เลือกทั้งหมด"
+   indeterminate = สถานะ "บางส่วน" (สี่เหลี่ยมแทนติ๊ก)
+   =================================================== */
+function syncCheckAll() {
+  const all = document.querySelectorAll('.row-check');
+  const checked = document.querySelectorAll('.row-check:checked');
+  const ca = document.getElementById('checkAll');
+  ca.checked = checked.length > 0 && checked.length === all.length;
+  ca.indeterminate = checked.length > 0 && checked.length < all.length;
+}
+
+/* ===================================================
+   checkAll — เลือก/ยกเลิกทั้งหมด
+   =================================================== */
+document.getElementById('checkAll').addEventListener('change', function() {
+  const checks = document.querySelectorAll('.row-check');
+  checks.forEach(cb => {
+    cb.checked = this.checked;
+    const idx = +cb.dataset.idx;
+    if (this.checked) selectedRows.add(idx);
+    else              selectedRows.delete(idx);
+    cb.closest('tr').classList.toggle('selected-row', this.checked);
+  });
+  updateSelectedFooter();
+});
+
+/* ===================================================
+   ปุ่มล้างการเลือก — คลิกแล้วเคลียร์ทุกอย่าง
+   =================================================== */
+document.getElementById('btnClearSel').addEventListener('click', () => {
+  selectedRows.clear();
+  renderTable();         /* render ใหม่ให้ checkbox กลับเป็นว่าง */
+  updateSelectedFooter();
+});
+
+/* ===================================================
+   applyColVisibility() — ซ่อน/แสดงคอลัมน์
+   =================================================== */
+function applyColVisibility() {
+  /* อัพเดตปุ่ม toggle */
+  document.querySelectorAll('.col-btn').forEach(btn => {
+    btn.classList.toggle('hidden-col', hiddenCols.has(btn.dataset.col));
+  });
+  /* ซ่อน/แสดง th header */
+  document.querySelectorAll('thead th[data-th]').forEach(th => {
+    th.style.display = hiddenCols.has(th.dataset.th) ? 'none' : '';
+  });
+  /* ซ่อน/แสดง td data ตาม data-td attribute */
+  document.querySelectorAll('tbody td[data-td], tfoot td[data-td]').forEach(td => {
+    td.style.display = hiddenCols.has(td.dataset.td) ? 'none' : '';
+  });
+}
+
+/* ===================================================
+   ปุ่ม Toggle Column — เพิ่ม event listener
+   addEventListener = ฟังเหตุการณ์ (เช่น click)
+   =================================================== */
+document.querySelectorAll('.col-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const col = btn.dataset.col;
+    /* toggle = เพิ่มถ้าไม่มี / ลบถ้ามีอยู่ */
+    if (hiddenCols.has(col)) hiddenCols.delete(col);
+    else hiddenCols.add(col);
+    renderTable();
+  });
+});
+
+/* ===================================================
+   SORT — คลิก header เพื่อ sort
+   =================================================== */
 document.querySelectorAll('thead th[data-col]').forEach(th => {
   th.addEventListener('click', () => {
     const col = th.dataset.col;
-    if (sortCol === col) sortDir *= -1; else { sortCol = col; sortDir = 1; }
+    /* ถ้า click คอลัมน์เดิม → กลับทิศ | ถ้าคอลัมน์ใหม่ → เริ่ม asc */
+    if (sortCol === col) sortDir *= -1;
+    else { sortCol = col; sortDir = 1; }
+
+    /* รีเซ็ต sort arrow ทุก th */
     document.querySelectorAll('thead th').forEach(t => {
       t.classList.remove('sort-active');
-      const arrow = t.querySelector('.sort-arrow');
-      if (arrow) arrow.textContent = '↕';
+      const a = t.querySelector('.sort-arrow');
+      if (a) a.textContent = '↕';
     });
+    /* ไฮไลท์ th ที่ sort อยู่ */
     th.classList.add('sort-active');
     th.querySelector('.sort-arrow').textContent = sortDir === 1 ? '↑' : '↓';
     renderTable();
   });
 });
-/* ================= INIT ================= */
-/* โหลดหน้า = render */
-renderSummary();
-renderTable();
+
+/* ===================================================
+   SEARCH — ฟัง event จาก input ค้นหา
+   keydown = เมื่อกดปุ่มใน keyboard
+   input   = เมื่อพิมพ์ (live search)
+   =================================================== */
+searchInput.addEventListener('keydown', e => {
+  if (e.key === 'Enter') {
+    const v = searchInput.value.trim();
+    /* เพิ่ม tag ถ้ายังไม่มีใน array */
+    if (v && !searchTags.includes(v.toLowerCase())) {
+      searchTags.push(v.toLowerCase());
+      renderTags();
+      searchInput.value = ''; /* เคลียร์ input */
+      renderTable();
+    }
+  }
+});
+searchInput.addEventListener('input', renderTable); /* live search */
+
+/* dropdown filter — เมื่อเปลี่ยนค่าให้ renderTable */
+['filterStatus', 'filterSales'].forEach(id =>
+  document.getElementById(id).addEventListener('input', renderTable)
+);
+
+/* ===================================================
+   INIT — เรียกครั้งแรกเมื่อหน้าโหลดเสร็จ
+   =================================================== */
+renderSummary();   /* วาด KPI cards */
+renderTable();     /* วาดตาราง */
 </script>
 </body>
 </html>
