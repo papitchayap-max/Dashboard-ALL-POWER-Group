@@ -86,7 +86,7 @@ body {
 .summary-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-  gap: 100px;
+  gap: 20px;
   margin-bottom: 1.5rem;
 }
 .metric {
@@ -289,7 +289,7 @@ td.num        { color: var(--navy); }
 td.sale-val   { font-weight: 700; color: var(--navy); }
 .deposit-qty  { font-weight: 800; color: var(--red); }
 .deposit-val  { font-weight: 700; color: var(--red); }
-.stored-qty   { font-weight: 800; color: var(--orange); }
+.stored-qty   { font-weight: 800; color: var(--navy); }
 td.profit-neg { color: var(--red); font-weight: 800; }
 
 /* update badge เล็กๆ ข้างตัวเลข */
@@ -429,7 +429,7 @@ tfoot td.total-profit-neg { color: var(--red); }
   <!-- FILTER BAR — ค้นหา + dropdown กรอง -->
   <div class="panel-body" style="padding-bottom:12px;">
     <div class="toolbar">
-      <input type="text" id="searchInput" placeholder="🔍  ค้นหา SO / Item / Sales Co. — กด Enter เพิ่ม Tag"/>
+      <input type="text" id="searchInput" placeholder="🔍  ค้นหา SO / Item / Sales Co."/>
       <select id="filterStatus">
         <option value="">📊 สถานะทั้งหมด</option>
         <option value="abroad">ตปท.</option>
