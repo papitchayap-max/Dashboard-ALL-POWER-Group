@@ -34,7 +34,7 @@ body {
   background-size: 28px 28px;
   color: var(--text);
   padding: 1.5rem 2rem;
-  font-size: 16px;
+  font-size: 18px;
   min-height: 100vh;
 }
 
@@ -154,31 +154,19 @@ body {
 .col-btn.hidden-col { background: #fde8e8; color: #c0392b; border-color: #f5b7b1; }
 
 /* SELECTION BAR */
-.sel-bar {
-  display: flex; align-items: center; gap: 10px; padding: 10px 20px;
-  background: linear-gradient(90deg, #e8f4ea, #f0f9f1);
-  border-bottom: 1px solid #c3e6cb; font-size: 15px; font-weight: 700; color: var(--green);
-  flex-wrap: wrap;
-}
+
 .sel-bar.hidden { display: none; }
 .sel-amounts { display: flex; gap: 16px; flex-wrap: wrap; }
 .sel-amount-item span { font-weight: 800; color: var(--navy); }
-.btn-clear-sel {
-  margin-left: auto; font-family: 'Sarabun', sans-serif;
-  font-size: 12px; font-weight: 700; padding: 4px 14px; border-radius: 20px;
-  border: 1.5px solid var(--green); background: var(--white); color: var(--green);
-  cursor: pointer; transition: all 0.15s;
-}
-.btn-clear-sel:hover { background: var(--green); color: #fff; }
 
 /* TABLE */
 .tbl-wrap { overflow-x: auto; }
-table { width: 100%; border-collapse: collapse; font-size: 14px; }
+table { width: 100%; border-collapse: collapse; font-size: 15px; }
 thead th {
   background: var(--navy); color: #fff; font-weight: 700;
   padding: 11px 10px; text-align: right; white-space: nowrap;
   border-bottom: 2px solid var(--blue); cursor: pointer; user-select: none;
-  font-size: 15px; position: sticky; top: 0; z-index: 2;
+  font-size: 16px; position: sticky; top: 0; z-index: 2; 
 }
 thead th.left { text-align: left; }
 thead th.center { text-align: center; }
@@ -194,7 +182,7 @@ tbody tr.selected-row { background: #dbeafe !important; }
 td {
   padding: 9px 10px; text-align: right;
   color: var(--text); white-space: nowrap;
-  vertical-align: middle; font-weight: 600; font-size: 14px;
+  vertical-align: middle; font-weight: 600; font-size: 15px;
 }
 td.left { text-align: left; }
 td.center { text-align: center; }
@@ -210,14 +198,15 @@ span.dim { color: var(--gray-200); font-weight: 400; }
 
 /* STATUS BADGE */
 .badge { display: inline-block; border-radius: 5px; font-size: 13px; font-weight: 700; padding: 3px 10px; white-space: nowrap; }
-.badge-ready   { background: #2563a8; color: #fff; }
-.badge-abroad  { background: #fee2e2; color: #991b1b; border: 1px solid #fca5a5; }
-.badge-partial { background: var(--gray-100); color: var(--gray-700); }
-.badge-stored  { background: #fff3cd; color: #856404; border: 1px solid #ffc107; }
+.badge-ready      { background: #2563a8; color: #fff; }
+.badge-stored-many{ background: #ffc107; color: #7a5200; border: 1px solid #e0a800; }
+.badge-abroad     { background: #fee2e2; color: #991b1b; border: 1px solid #fca5a5; }
+.badge-partial    { background: var(--gray-100); color: var(--gray-700); }
+.badge-stored     { background: #fff3cd; color: #856404; border: 1px solid #ffc107; }
 
 /* FOOTER TOTALS */
 tfoot tr { background: #eef3fb; border-top: 2px solid var(--blue); }
-tfoot td { padding: 10px 10px; font-weight: 800; color: var(--navy); font-size: 15px; text-align: right; white-space: nowrap; }
+tfoot td { padding: 10px 10px; font-weight: 800; color: var(--navy); font-size: 16px; text-align: right; white-space: nowrap; }
 tfoot td.left { text-align: left; }
 tfoot td.total-sale   { color: var(--navy); }
 tfoot td.total-inv    { color: var(--red); }
@@ -300,7 +289,7 @@ tfoot td.total-profit-neg { color: var(--red); }
     <button class="col-btn" data-col="order">QTY.</button>
     <button class="col-btn" data-col="deposit">รอ INV.</button>
     <button class="col-btn" data-col="depositVal">มูลค่า</button>
-    <button class="col-btn" data-col="inv">INV.</button>
+    <button class="col-btn" data-col="inv">INV. แล้ว</button>
     <button class="col-btn" data-col="stored">ฝากของ</button>
     <button class="col-btn" data-col="remain">ตปท.</button>
     <button class="col-btn" data-col="status">สถานะ</button>
@@ -308,12 +297,13 @@ tfoot td.total-profit-neg { color: var(--red); }
     <button class="col-btn" data-col="costPrice">ต้นทุน/ชิ้น</button>
     <button class="col-btn" data-col="costAmt">ยอดต้นทุน</button>
     <button class="col-btn" data-col="profit">กำไร</button>
+    <button class="col-btn hidden-col" data-col="remark">หมายเหตุ</button>
   </div>
 
   <!-- FILTER BAR -->
   <div class="panel-body" style="padding-bottom:12px;">
     <div class="toolbar">
-      <input type="text" id="searchInput" placeholder="🔍  ค้นหา SO / Item / Sales Co. — กด Enter เพิ่ม Tag"/>
+      <input type="text" id="searchInput" placeholder="🔍  ค้นหา SO / Item / Sales Co."/>
       <select id="filterStatus">
         <option value="">📊 สถานะทั้งหมด</option>
         <option value="abroad">ตปท.</option>
@@ -329,15 +319,7 @@ tfoot td.total-profit-neg { color: var(--red); }
     <div class="tag-bar" id="tagBar"></div>
   </div>
 
-  <!-- SELECTION BAR -->
-  <div class="sel-bar hidden" id="selBar">
-    <span class="sel-info" id="selInfo"></span>
-    <div class="sel-amounts">
-      <span class="sel-amount-item">Amount: <span id="selAmountInline">-</span></span>
-      <span class="sel-amount-item">มูลค่า: <span id="selDepositInline">-</span></span>
-    </div>
-    <button class="btn-clear-sel" id="btnClearSel2">✕ ล้าง</button>
-  </div>
+
 
   <!-- TABLE -->
   <div class="tbl-wrap">
@@ -355,10 +337,11 @@ tfoot td.total-profit-neg { color: var(--red); }
           <th data-th="order"      style="min-width:58px"  data-col="order">QTY. <span class="sort-arrow">↕</span></th>
           <th data-th="deposit"    class="grp-l" style="min-width:60px" data-col="deposit">รอ INV. <span class="sort-arrow">↕</span></th>
           <th data-th="depositVal" style="min-width:110px" data-col="depositVal">มูลค่า <span class="sort-arrow">↕</span></th>
-          <th data-th="inv"        class="grp-l" style="min-width:55px" data-col="inv">INV. <span class="sort-arrow">↕</span></th>
+          <th data-th="inv"        class="grp-l" style="min-width:55px" data-col="inv">INV. แล้ว <span class="sort-arrow">↕</span></th>
           <th data-th="stored"     style="min-width:68px"  data-col="stored">ฝากของ <span class="sort-arrow">↕</span></th>
           <th data-th="remain"     class="grp-l" style="min-width:60px" data-col="remain">ตปท. <span class="sort-arrow">↕</span></th>
           <th data-th="status"     class="grp-l" style="min-width:85px" data-col="status">สถานะ <span class="sort-arrow">↕</span></th>
+          <th data-th="remark"     class="left"  style="min-width:120px" data-col="remark">หมายเหตุ <span class="sort-arrow">↕</span></th>
           <th data-th="salesco"    class="left"  style="min-width:95px" data-col="salesco">Sales Co. <span class="sort-arrow">↕</span></th>
         </tr>
       </thead>
@@ -409,7 +392,7 @@ const api = (path, opts = {}) =>
 let raw = [];
 let sortCol = 'depositVal';
 let sortDir = -1;
-const hiddenCols = new Set(['costPrice', 'costAmt', 'profit', 'salePrice', 'saleAmt']);
+const hiddenCols = new Set(['costPrice', 'costAmt', 'profit', 'salePrice', 'saleAmt', 'remark']);
 let selectedRows = new Set();
 let searchTags = [];
 
@@ -465,6 +448,7 @@ function computeFields() {
 function showLoading(v) {
   document.getElementById('loadingOverlay').classList.toggle('hidden', !v);
 }
+
 function showError(msg) {
   const el = document.getElementById('errorBanner');
   el.textContent = '⚠️ ' + msg;
@@ -476,6 +460,7 @@ function hideError() {
 
 /* ===== STATUS ===== */
 function getStatus(r) {
+  if (r.stored > 1)                    return 'ready';
   if (r.stored > 0)                    return 'ready';
   if (r.deposit === 0 && r.remain > 0) return 'abroad';
   if (r.deposit > 0)                   return 'ready';
@@ -504,23 +489,13 @@ function renderSummary() {
       <div class="metric-value c-blue">${raw.length}</div>
       <div class="metric-sub">Sales Orders</div>
     </div>
-    <div class="metric m-amount">
-      <div class="metric-label">Amount รวม</div>
-      <div class="metric-value c-amber" style="font-size:22px">${fmtMoney(totalSale)}</div>
-      <div class="metric-sub">บาท</div>
-    </div>
-    <div class="metric m-wait">
-      <div class="metric-label">มูลค่ารอ INV.</div>
-      <div class="metric-value c-red" style="font-size:22px">${fmtMoney(totalWaitInv)}</div>
-      <div class="metric-sub">บาท</div>
-    </div>
     <div class="metric m-abroad">
       <div class="metric-label">ตปท.</div>
       <div class="metric-value c-red">${counts.abroad}</div>
       <div class="metric-sub">รายการ</div>
     </div>
     <div class="metric m-stored">
-      <div class="metric-label">ฝากของ</div>
+      <div class="metric-label">พร้อมส่ง</div>
       <div class="metric-value c-orange">${counts.ready}</div>
       <div class="metric-sub">รายการ</div>
     </div>`;
@@ -569,16 +544,18 @@ function renderTable() {
   document.getElementById('tableBody').innerHTML = filtered.map((r, i) => {
     const status = getStatus(r);
     const badge = {
-      ready:   `<span class="badge badge-ready">พร้อมส่ง</span>`,
-      abroad:  `<span class="badge badge-abroad">ตปท.</span>`,
-      partial: `<span class="badge badge-partial">บางส่วน</span>`,
-      stored:  `<span class="badge badge-stored">ฝากของ</span>`,
+      ready:       `<span class="badge badge-ready">พร้อมส่ง</span>`,
+      stored_many: `<span class="badge badge-stored-many">พร้อมส่ง</span>`,
+      abroad:      `<span class="badge badge-abroad">ตปท.</span>`,
+      partial:     `<span class="badge badge-partial">บางส่วน</span>`,
+      stored:      `<span class="badge badge-stored">ฝากของ</span>`,
     }[status] || '';
     const depositCell    = r.deposit > 0 ? `<span class="deposit-qty">${fmt(r.deposit)}</span>` : `<span class="dim">-</span>`;
     const depositValCell = r.depositVal > 0 ? `<span class="deposit-val">${fmtMoney(r.depositVal)} ฿</span>` : `<span class="dim">-</span>`;
     const storedCell     = r.stored > 0 ? `<span class="stored-qty">${fmt(r.stored)}</span>` : `<span class="dim">-</span>`;
     const checked = selectedRows.has(r.id) ? 'checked' : '';
     const selClass = selectedRows.has(r.id) ? 'selected-row' : '';
+      /* แสดงผลข้อมูล ตาราง */
     return `<tr class="${selClass}" data-id="${r.id}">
       <td class="col-check center"><input type="checkbox" class="row-check" data-id="${r.id}" ${checked}/></td>
       <td class="so left">${r.so}</td>
@@ -600,6 +577,8 @@ function renderTable() {
       <td data-td="stored">${storedCell}</td>
       <td class="grp-l" data-td="remain">${dash(r.remain)}</td>
       <td class="grp-l" data-td="status">${badge}</td>
+      <td class="left" data-td="remark" style="color:#8a94a8;font-size:13px">${r.update||'-'}</td>
+
       <td class="salesco left" data-td="salesco">${r.salesco}</td>
     </tr>`;
   }).join('');
@@ -609,10 +588,11 @@ function renderTable() {
   const tRemain  = filtered.reduce((s, r) => s + (r.remain     || 0), 0);
   const tOrder   = filtered.reduce((s, r) => s + (r.order      || 0), 0);
   const tInv     = filtered.reduce((s, r) => s + (r.inv        || 0), 0);
+  const tstored  = filtered.reduce((s, r) => s + (r.stored      || 0), 0);
   const tCost    = filtered.every(r => r.costAmt == null) ? null : filtered.reduce((s, r) => s + (r.costAmt || 0), 0);
   const tProfit  = tCost != null ? tSale - tCost : null;
   const profitClass = tProfit == null ? '' : tProfit >= 0 ? 'total-profit' : 'total-profit-neg';
-
+/* แสดงผล คำนวณทุก คอลัมน์*/
   document.getElementById('tableFoot').innerHTML = `<tr>
     <td></td>
     <td class="left" colspan="2" style="font-weight:800;color:#1b3a5c;font-size:15px">รวมทั้งหมด ${filtered.length} รายการ</td>
@@ -624,9 +604,9 @@ function renderTable() {
     <td class="grp-l" data-td="deposit"></td>
     <td class="total-inv" data-td="depositVal">${fmtMoney(tWaitInv)} ฿</td>
     <td class="grp-l" data-td="inv" style="font-weight:800">${fmt(tInv)}</td>
-    <td data-td="stored"></td>
-    <td class="grp-l" data-td="remain" style="font-weight:800;color:#c0392b">${fmt(tRemain)}</td>
-    <td class="grp-l" data-td="status"></td><td data-td="salesco"></td>
+    <td data-td="stored">${fmt(tstored)}</td>
+    <td class="grp-l" data-td="remain" style="font-weight:800;color:#1b3a5c">${fmt(tRemain)}</td>
+    <td class="grp-l" data-td="status"></td><td data-td="salesco"></td><td data-td="remark"></td>
   </tr>`;
 
   applyColVisibility();
@@ -654,11 +634,20 @@ function syncCheckAll() {
 function updateSelectedFooter() {
   const selData = raw.filter(r => selectedRows.has(r.id));
   const footer = document.getElementById('selectedFooter');
-  if (selData.length === 0) { footer.classList.add('hidden'); return; }
+  if (selData.length === 0) {
+    footer.classList.add('hidden');
+    return;
+  }
+  const totalSaleAmt = selData.reduce((s,r)=>s+(r.saleAmt||0),0);
+  const totalDepVal  = selData.reduce((s,r)=>s+(r.depositVal||0),0);
+  const fmtNum = n => n.toLocaleString('th-TH', {minimumFractionDigits:2, maximumFractionDigits:2});
+
   footer.classList.remove('hidden');
   document.getElementById('selCount').textContent     = selData.length;
-  document.getElementById('selAmount').textContent    = fmtMoney(selData.reduce((s,r)=>s+(r.saleAmt||0),0)) + ' ฿';
-  document.getElementById('selDepositVal').textContent= fmtMoney(selData.reduce((s,r)=>s+(r.depositVal||0),0)) + ' ฿';
+  document.getElementById('selAmount').innerHTML      = fmtMoney(totalSaleAmt) + ' ฿';
+  document.getElementById('selDepositVal').innerHTML  = fmtMoney(totalDepVal) + ' ฿';
+
+  
 }
 document.getElementById('checkAll').addEventListener('change', function() {
   document.querySelectorAll('.row-check').forEach(cb => {
@@ -672,6 +661,7 @@ document.getElementById('checkAll').addEventListener('change', function() {
 document.getElementById('btnClearSel').addEventListener('click', () => {
   selectedRows.clear(); renderTable(); updateSelectedFooter();
 });
+
 
 /* ===== COLUMN VISIBILITY ===== */
 function applyColVisibility() {
