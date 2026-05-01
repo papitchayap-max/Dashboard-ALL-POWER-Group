@@ -1,0 +1,717 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Admin — ALL POWER Group</title>
+<link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
+<style>
+:root {
+  --navy:    #1b3a5c;
+  --blue:    #2563a8;
+  --blue-lt: #4a86c8;
+  --red:     #c0392b;
+  --green:   #1a7a4a;
+  --orange:  #d9651a;
+  --white:   #ffffff;
+  --gray-50: #f8f9fc;
+  --gray-100:#eef1f6;
+  --gray-200:#dde2ec;
+  --gray-400:#8a94a8;
+  --gray-700:#3d4a5e;
+  --text:    #1a2a3a;
+  --radius:  10px;
+  --shadow:  0 2px 12px rgba(27,58,92,0.09);
+  --shadow-lg:0 4px 24px rgba(27,58,92,0.14);
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{
+  font-family:'Sarabun',sans-serif;
+  background:#dce8f5;
+  background-image:radial-gradient(circle,rgba(37,99,168,0.06) 1px,transparent 1px);
+  background-size:28px 28px;
+  color:var(--text);padding:1.5rem 2rem;font-size:16px;min-height:100vh;
+}
+
+/* LOADING */
+#loadingOverlay{
+  position:fixed;inset:0;background:rgba(27,58,92,0.55);
+  display:flex;align-items:center;justify-content:center;z-index:9999;backdrop-filter:blur(3px);
+}
+#loadingOverlay.hidden{display:none}
+.loading-box{background:#fff;border-radius:16px;padding:32px 48px;text-align:center;box-shadow:0 8px 40px rgba(27,58,92,0.25)}
+.spinner{width:40px;height:40px;border:4px solid var(--gray-200);border-top-color:var(--blue);border-radius:50%;animation:spin 0.8s linear infinite;margin:0 auto 14px}
+@keyframes spin{to{transform:rotate(360deg)}}
+.loading-text{font-size:16px;font-weight:600;color:var(--navy)}
+
+/* TOAST */
+#toast{
+  position:fixed;bottom:24px;right:24px;z-index:9999;
+  background:var(--green);color:#fff;
+  border-radius:10px;padding:13px 22px;
+  font-size:15px;font-weight:700;
+  box-shadow:0 4px 20px rgba(0,0,0,0.2);
+  transform:translateY(80px);opacity:0;
+  transition:all 0.3s;pointer-events:none;
+}
+#toast.show{transform:translateY(0);opacity:1}
+#toast.err{background:var(--red)}
+
+/* HEADER */
+.page-header{display:flex;align-items:center;gap:16px;margin-bottom:1.5rem}
+.page-title{font-size:24px;font-weight:800;color:var(--navy)}
+.page-subtitle{font-size:15px;color:var(--gray-400);font-weight:500;margin-top:2px}
+.btn-back{
+  margin-left:auto;font-family:'Sarabun',sans-serif;
+  font-size:15px;font-weight:700;padding:9px 20px;border-radius:8px;border:none;
+  background:var(--gray-100);color:var(--navy);cursor:pointer;
+  text-decoration:none;display:inline-flex;align-items:center;gap:6px;
+  transition:all 0.15s;
+}
+.btn-back:hover{background:var(--gray-200)}
+
+/* CARD */
+.card{background:var(--white);border-radius:14px;box-shadow:var(--shadow-lg);margin-bottom:1.5rem;overflow:hidden}
+.card-header{
+  padding:16px 24px;border-bottom:1px solid var(--gray-100);
+  display:flex;align-items:center;gap:12px;
+}
+.card-title{font-size:18px;font-weight:800;color:var(--navy)}
+.card-body{padding:24px}
+
+/* FORM */
+.form-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(200px,1fr));
+  gap:16px;
+}
+.form-group{display:flex;flex-direction:column;gap:6px}
+.form-group label{font-size:13px;font-weight:700;color:var(--gray-700);text-transform:uppercase;letter-spacing:0.04em}
+.form-group input,.form-group select{
+  font-family:'Sarabun',sans-serif;font-size:15px;font-weight:600;
+  padding:10px 14px;border:1.5px solid var(--gray-200);
+  border-radius:8px;background:var(--gray-50);color:var(--navy);
+  outline:none;transition:border-color 0.15s,box-shadow 0.15s;width:100%;
+}
+.form-group input:focus,.form-group select:focus{
+  border-color:var(--blue-lt);
+  box-shadow:0 0 0 3px rgba(74,134,200,0.15);
+  background:var(--white);
+}
+.form-group input.err{border-color:var(--red);background:#fff5f5}
+.form-hint{font-size:12px;color:var(--gray-400);font-weight:500}
+
+.form-actions{display:flex;gap:10px;margin-top:20px;flex-wrap:wrap}
+.btn{
+  font-family:'Sarabun',sans-serif;font-size:15px;font-weight:700;
+  padding:10px 24px;border-radius:8px;border:none;cursor:pointer;
+  transition:all 0.15s;display:inline-flex;align-items:center;gap:6px;
+}
+.btn-primary{background:linear-gradient(135deg,var(--blue),var(--navy));color:#fff;box-shadow:0 2px 8px rgba(37,99,168,0.3)}
+.btn-primary:hover{opacity:0.88;transform:translateY(-1px)}
+.btn-secondary{background:var(--gray-100);color:var(--navy)}
+.btn-secondary:hover{background:var(--gray-200)}
+.btn-danger{background:#fee2e2;color:var(--red);border:1px solid #fca5a5}
+.btn-danger:hover{background:#fca5a5;color:#fff}
+.btn-sm{font-size:13px;padding:6px 14px}
+.btn:disabled{opacity:0.5;cursor:not-allowed;transform:none}
+
+/* SEARCH */
+.search-bar{display:flex;gap:10px;flex-wrap:wrap;padding:16px 24px;background:var(--gray-50);border-bottom:1px solid var(--gray-100)}
+.search-bar input,.search-bar select{
+  font-family:'Sarabun',sans-serif;font-size:15px;font-weight:600;
+  padding:9px 14px;border:1.5px solid var(--gray-200);
+  border-radius:8px;background:var(--white);color:var(--navy);
+  outline:none;transition:border-color 0.15s;
+}
+.search-bar input:focus,.search-bar select:focus{border-color:var(--blue-lt)}
+#tblSearch{flex:1;min-width:200px}
+.record-count{font-size:14px;font-weight:600;color:var(--gray-400);padding:0 4px;display:flex;align-items:center}
+
+/* TABLE */
+.tbl-wrap{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:14px}
+thead th{
+  background:var(--navy);color:#fff;font-weight:700;
+  padding:11px 12px;text-align:left;white-space:nowrap;
+  border-bottom:2px solid var(--blue);font-size:14px;
+  position:sticky;top:0;z-index:2;
+}
+thead th.right{text-align:right}
+thead th.center{text-align:center}
+tbody tr{border-bottom:1px solid var(--gray-100);transition:background 0.1s}
+tbody tr:last-child{border-bottom:none}
+tbody tr:hover{background:#eef4fc}
+td{padding:9px 12px;vertical-align:middle;white-space:nowrap;font-weight:600;font-size:14px}
+td.right{text-align:right}
+td.center{text-align:center}
+td.so-cell{font-weight:800;color:var(--navy)}
+td.item-cell{color:var(--navy)}
+.dep-cell{color:var(--red);font-weight:800}
+
+/* MODAL */
+.modal-overlay{
+  position:fixed;inset:0;background:rgba(27,58,92,0.5);
+  display:flex;align-items:center;justify-content:center;
+  z-index:1000;backdrop-filter:blur(3px);
+  padding:16px;
+}
+.modal-overlay.hidden{display:none}
+.modal{
+  background:var(--white);border-radius:16px;
+  box-shadow:0 8px 40px rgba(27,58,92,0.25);
+  width:100%;max-width:680px;max-height:90vh;overflow-y:auto;
+}
+.modal-header{
+  padding:20px 24px;border-bottom:1px solid var(--gray-100);
+  display:flex;align-items:center;justify-content:space-between;
+  position:sticky;top:0;background:var(--white);z-index:2;
+}
+.modal-title{font-size:18px;font-weight:800;color:var(--navy)}
+.modal-close{background:none;border:none;font-size:22px;cursor:pointer;color:var(--gray-400);padding:4px 8px;border-radius:6px;transition:all 0.15s}
+.modal-close:hover{background:var(--gray-100);color:var(--navy)}
+.modal-body{padding:24px}
+.modal-footer{padding:16px 24px;border-top:1px solid var(--gray-100);display:flex;gap:10px;justify-content:flex-end}
+
+/* CONFIRM DIALOG */
+.confirm-overlay{
+  position:fixed;inset:0;background:rgba(27,58,92,0.6);
+  display:flex;align-items:center;justify-content:center;
+  z-index:2000;backdrop-filter:blur(4px);
+}
+.confirm-overlay.hidden{display:none}
+.confirm-box{
+  background:var(--white);border-radius:16px;padding:32px;
+  max-width:420px;width:90%;text-align:center;
+  box-shadow:0 8px 40px rgba(27,58,92,0.3);
+}
+.confirm-icon{font-size:48px;margin-bottom:12px}
+.confirm-title{font-size:20px;font-weight:800;color:var(--navy);margin-bottom:8px}
+.confirm-msg{font-size:15px;color:var(--gray-700);margin-bottom:24px;line-height:1.5}
+.confirm-actions{display:flex;gap:12px;justify-content:center}
+
+/* IMPORT */
+.import-area{
+  border:2px dashed var(--gray-200);border-radius:10px;
+  padding:24px;text-align:center;background:var(--gray-50);
+  cursor:pointer;transition:all 0.15s;
+}
+.import-area:hover,.import-area.drag-over{border-color:var(--blue);background:#eef4fc}
+.import-area p{font-size:15px;color:var(--gray-400);font-weight:600;margin-top:8px}
+
+/* BADGE */
+.badge{display:inline-block;border-radius:5px;font-size:12px;font-weight:700;padding:2px 8px}
+.badge-papitchaya{background:#dbeafe;color:#1e40af}
+.badge-jureemas  {background:#fce7f3;color:#9d174d}
+.badge-patcharaporn{background:#d1fae5;color:#065f46}
+
+@media(max-width:768px){body{padding:0.8rem}}
+
+/* LOGIN SCREEN */
+#loginScreen{
+  position:fixed;inset:0;z-index:8888;
+  background:#dce8f5;
+  background-image:radial-gradient(circle,rgba(37,99,168,0.06) 1px,transparent 1px);
+  background-size:28px 28px;
+  display:flex;align-items:center;justify-content:center;
+}
+#loginScreen.hidden{display:none}
+.login-box{
+  background:#fff;border-radius:20px;
+  box-shadow:0 8px 40px rgba(27,58,92,0.18);
+  padding:40px 48px;width:100%;max-width:400px;text-align:center;
+}
+.login-logo{font-size:40px;margin-bottom:12px}
+.login-title{font-size:22px;font-weight:800;color:var(--navy);margin-bottom:4px}
+.login-sub{font-size:14px;color:var(--gray-400);font-weight:500;margin-bottom:28px}
+.login-group{text-align:left;margin-bottom:16px}
+.login-group label{font-size:13px;font-weight:700;color:var(--gray-700);text-transform:uppercase;letter-spacing:0.04em;display:block;margin-bottom:6px}
+.login-input-wrap{position:relative}
+.login-group input{
+  width:100%;font-family:'Sarabun',sans-serif;font-size:16px;font-weight:600;
+  padding:12px 44px 12px 16px;border:2px solid var(--gray-200);
+  border-radius:10px;background:var(--gray-50);color:var(--navy);
+  outline:none;transition:all 0.15s;
+}
+.login-group input:focus{border-color:var(--blue-lt);background:#fff;box-shadow:0 0 0 3px rgba(74,134,200,0.15)}
+.login-group input.err{border-color:var(--red);background:#fff5f5;animation:shake 0.3s}
+@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+.eye-btn{
+  position:absolute;right:12px;top:50%;transform:translateY(-50%);
+  background:none;border:none;cursor:pointer;font-size:18px;
+  color:var(--gray-400);padding:4px;transition:color 0.15s;
+}
+.eye-btn:hover{color:var(--navy)}
+.btn-login{
+  width:100%;font-family:'Sarabun',sans-serif;font-size:17px;font-weight:800;
+  padding:13px;border-radius:10px;border:none;cursor:pointer;
+  background:linear-gradient(135deg,var(--blue),var(--navy));
+  color:#fff;box-shadow:0 4px 14px rgba(37,99,168,0.35);
+  transition:all 0.15s;margin-top:4px;
+}
+.btn-login:hover{opacity:0.88;transform:translateY(-1px)}
+.login-err{
+  color:var(--red);font-size:14px;font-weight:700;
+  margin-top:12px;min-height:20px;
+}
+</style>
+</head>
+<body>
+
+<!-- LOGIN SCREEN -->
+<div id="loginScreen">
+  <div class="login-box">
+    <div class="login-logo">🔐</div>
+    <div class="login-title">Admin Panel</div>
+    <div class="login-sub">ALL POWER Group Dashboard</div>
+    <div class="login-group">
+      <label>รหัสผ่าน</label>
+      <div class="login-input-wrap">
+        <input type="password" id="loginInput" placeholder="กรอกรหัสผ่าน" autocomplete="current-password"/>
+        <button class="eye-btn" id="eyeBtn" tabindex="-1">👁️</button>
+      </div>
+    </div>
+    <button class="btn-login" id="btnLogin">เข้าสู่ระบบ</button>
+    <div class="login-err" id="loginErr"></div>
+  </div>
+</div>
+
+<!-- LOADING -->
+<div id="loadingOverlay">
+  <div class="loading-box">
+    <div class="spinner"></div>
+    <div class="loading-text" id="loadingText">กำลังโหลด...</div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div id="toast"></div>
+
+<!-- CONFIRM -->
+<div class="confirm-overlay hidden" id="confirmOverlay">
+  <div class="confirm-box">
+    <div class="confirm-icon">🗑️</div>
+    <div class="confirm-title">ยืนยันการลบ?</div>
+    <div class="confirm-msg" id="confirmMsg"></div>
+    <div class="confirm-actions">
+      <button class="btn btn-secondary" id="confirmCancel">ยกเลิก</button>
+      <button class="btn btn-danger" id="confirmOk">ลบเลย</button>
+    </div>
+  </div>
+</div>
+
+<!-- EDIT MODAL -->
+<div class="modal-overlay hidden" id="editModal">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title" id="modalTitle">✏️ แก้ไขรายการ</div>
+      <button class="modal-close" id="modalClose">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-grid" id="modalForm"></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" id="modalCancel">ยกเลิก</button>
+      <button class="btn btn-primary" id="modalSave">💾 บันทึก</button>
+    </div>
+  </div>
+</div>
+
+<!-- HEADER -->
+<div class="page-header">
+  <div>
+    <div class="page-title">⚙️ จัดการข้อมูล</div>
+    <div class="page-subtitle">เพิ่ม / แก้ไข / ลบ Sales Orders</div>
+  </div>
+  <a href="index.html" class="btn-back">← กลับ Dashboard</a>
+</div>
+
+<!-- ADD FORM -->
+<div class="card">
+  <div class="card-header">
+    <div class="card-title">➕ เพิ่มรายการใหม่</div>
+  </div>
+  <div class="card-body">
+    <div class="form-grid" id="addForm">
+      <div class="form-group">
+        <label>Sales Order *</label>
+        <input type="text" id="f_so" placeholder="SC-XXXXXX"/>
+      </div>
+      <div class="form-group">
+        <label>Item *</label>
+        <input type="text" id="f_item" placeholder="ชื่อสินค้า"/>
+      </div>
+      <div class="form-group">
+        <label>Unit Price (฿) *</label>
+        <input type="number" id="f_sale_price" placeholder="0" min="0"/>
+      </div>
+      <div class="form-group">
+        <label>ต้นทุน/ชิ้น (฿)</label>
+        <input type="number" id="f_cost_price" placeholder="ไม่บังคับ" min="0"/>
+        <span class="form-hint">ไม่กรอกได้ถ้าไม่มีข้อมูล</span>
+      </div>
+      <div class="form-group">
+        <label>QTY. รวม *</label>
+        <input type="number" id="f_qty" placeholder="0" min="0"/>
+      </div>
+      <div class="form-group">
+        <label>รอ INV.</label>
+        <input type="number" id="f_deposit" placeholder="0" min="0" value="0"/>
+      </div>
+      <div class="form-group">
+        <label>INV. แล้ว</label>
+        <input type="number" id="f_inv" placeholder="0" min="0" value="0"/>
+      </div>
+      <div class="form-group">
+        <label>ฝากของ</label>
+        <input type="number" id="f_stored" placeholder="0" min="0" value="0"/>
+      </div>
+      <div class="form-group">
+        <label>Sales Co. *</label>
+        <select id="f_salesco">
+          <option value="">-- เลือก --</option>
+          <option value="Papitchaya">Papitchaya</option>
+          <option value="Jureemas">Jureemas</option>
+          <option value="Patcharaporn">Patcharaporn</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>หมายเหตุ / Update</label>
+        <input type="text" id="f_update_note" placeholder="หมายเหตุ (ถ้ามี)"/>
+      </div>
+    </div>
+    <div class="form-actions">
+      <button class="btn btn-primary" id="btnAdd">➕ เพิ่มรายการ</button>
+      <button class="btn btn-secondary" id="btnClear">ล้างฟอร์ม</button>
+    </div>
+  </div>
+</div>
+
+<!-- TABLE CARD -->
+<div class="card">
+  <div class="card-header">
+    <div class="card-title">📋 รายการทั้งหมด</div>
+    <div style="margin-left:auto;display:flex;gap:8px">
+      <button class="btn btn-secondary btn-sm" id="btnReload">🔄 โหลดใหม่</button>
+    </div>
+  </div>
+
+  <div class="search-bar">
+    <input type="text" id="tblSearch" placeholder="🔍 ค้นหา SO / Item"/>
+    <select id="tblSales">
+      <option value="">Sales Co. ทั้งหมด</option>
+      <option value="Papitchaya">Papitchaya</option>
+      <option value="Jureemas">Jureemas</option>
+      <option value="Patcharaporn">Patcharaporn</option>
+    </select>
+    <div class="record-count" id="recordCount"></div>
+  </div>
+
+  <div class="tbl-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>Sales Order</th>
+          <th>Item</th>
+          <th class="right">Unit Price</th>
+          <th class="right">QTY.</th>
+          <th class="right">รอ INV.</th>
+          <th class="right">INV.</th>
+          <th class="right">ฝากของ</th>
+          <th>Sales Co.</th>
+          <th>หมายเหตุ</th>
+          <th class="center">จัดการ</th>
+        </tr>
+      </thead>
+      <tbody id="adminBody"></tbody>
+    </table>
+  </div>
+</div>
+
+<script>
+/* ===== CONFIG ===== */
+const SUPABASE_URL = 'https://hrekxmmkwfwhsuaphwlz.supabase.co';
+const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhyZWt4bW1rd2Z3aHN1YXBod2x6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc1Njk0NDgsImV4cCI6MjA5MzE0NTQ0OH0.SfCiA5jTaPVUA1_2NuxUUgr_7ePGAzZM958EFJynnAI';
+
+const api = (path, opts = {}) =>
+  fetch(`${SUPABASE_URL}/rest/v1/${path}`, {
+    headers: {
+      'apikey': SUPABASE_KEY,
+      'Authorization': `Bearer ${SUPABASE_KEY}`,
+      'Content-Type': 'application/json',
+      'Prefer': 'return=representation',
+      ...opts.headers
+    },
+    ...opts
+  });
+
+/* ===== STATE ===== */
+let allData = [];
+let editingId = null;
+
+/* ===== TOAST ===== */
+function toast(msg, err = false) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = 'show' + (err ? ' err' : '');
+  setTimeout(() => t.className = '', 3000);
+}
+
+/* ===== LOADING ===== */
+function loading(v, text = 'กำลังโหลด...') {
+  document.getElementById('loadingText').textContent = text;
+  document.getElementById('loadingOverlay').classList.toggle('hidden', !v);
+}
+
+/* ===== LOAD DATA ===== */
+async function loadData() {
+  loading(true, 'กำลังโหลดข้อมูล...');
+  try {
+    const res = await api('orders?select=*&order=id.asc');
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+    allData = await res.json();
+    renderTable();
+  } catch(e) {
+    toast('โหลดไม่สำเร็จ: ' + e.message, true);
+  } finally {
+    loading(false);
+  }
+}
+
+/* ===== RENDER TABLE ===== */
+function renderTable() {
+  const q  = document.getElementById('tblSearch').value.toLowerCase();
+  const sc = document.getElementById('tblSales').value;
+  const filtered = allData.filter(r => {
+    const matchQ  = !q  || r.so.toLowerCase().includes(q) || r.item.toLowerCase().includes(q);
+    const matchSc = !sc || r.salesco === sc;
+    return matchQ && matchSc;
+  });
+  document.getElementById('recordCount').textContent = `${filtered.length} รายการ`;
+  const salesBadge = s => {
+    const map = {Papitchaya:'badge-papitchaya',Jureemas:'badge-jureemas',Patcharaporn:'badge-patcharaporn'};
+    return `<span class="badge ${map[s]||''}">${s}</span>`;
+  };
+  document.getElementById('adminBody').innerHTML = filtered.map(r => `
+    <tr data-id="${r.id}">
+      <td class="so-cell">${r.so}</td>
+      <td class="item-cell">${r.item}</td>
+      <td class="right">${Number(r.sale_price).toLocaleString('th-TH')} ฿</td>
+      <td class="right">${r.qty}</td>
+      <td class="right ${r.deposit>0?'dep-cell':''}">${r.deposit||'-'}</td>
+      <td class="right">${r.inv||'-'}</td>
+      <td class="right">${r.stored||'-'}</td>
+      <td>${salesBadge(r.salesco)}</td>
+      <td style="color:#8a94a8;font-size:13px">${r.update_note||'-'}</td>
+      <td class="center">
+        <button class="btn btn-secondary btn-sm" onclick="openEdit(${r.id})">✏️ แก้ไข</button>
+        <button class="btn btn-danger btn-sm" style="margin-left:4px" onclick="confirmDelete(${r.id})">🗑️</button>
+      </td>
+    </tr>`).join('');
+}
+
+/* ===== ADD ===== */
+const FIELDS = [
+  {id:'f_so',       col:'so',          req:true,  type:'text'},
+  {id:'f_item',     col:'item',        req:true,  type:'text'},
+  {id:'f_sale_price',col:'sale_price', req:true,  type:'number'},
+  {id:'f_cost_price',col:'cost_price', req:false, type:'number'},
+  {id:'f_qty',      col:'qty',         req:true,  type:'number'},
+  {id:'f_deposit',  col:'deposit',     req:false, type:'number'},
+  {id:'f_inv',      col:'inv',         req:false, type:'number'},
+  {id:'f_stored',   col:'stored',      req:false, type:'number'},
+  {id:'f_salesco',  col:'salesco',     req:true,  type:'text'},
+  {id:'f_update_note',col:'update_note',req:false,type:'text'},
+];
+
+function readForm(prefix = 'f_') {
+  const data = {};
+  let valid = true;
+  FIELDS.forEach(f => {
+    const el = document.getElementById(f.id);
+    el.classList.remove('err');
+    const v = el.value.trim();
+    if (f.req && !v) { el.classList.add('err'); valid = false; return; }
+    if (f.type === 'number') {
+      data[f.col] = v === '' ? null : Number(v);
+    } else {
+      data[f.col] = v || '';
+    }
+  });
+  return valid ? data : null;
+}
+
+document.getElementById('btnAdd').addEventListener('click', async () => {
+  const data = readForm();
+  if (!data) { toast('กรุณากรอกข้อมูลที่จำเป็นให้ครบ', true); return; }
+  loading(true, 'กำลังบันทึก...');
+  try {
+    const res = await api('orders', { method:'POST', body: JSON.stringify(data) });
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+    const created = await res.json();
+    allData.push(created[0] || {...data, id: Date.now()});
+    clearAddForm();
+    renderTable();
+    toast('✅ เพิ่มรายการสำเร็จ!');
+  } catch(e) {
+    toast('เพิ่มไม่สำเร็จ: ' + e.message, true);
+  } finally { loading(false); }
+});
+
+function clearAddForm() {
+  FIELDS.forEach(f => {
+    const el = document.getElementById(f.id);
+    el.classList.remove('err');
+    if (f.id === 'f_deposit' || f.id === 'f_inv' || f.id === 'f_stored') el.value = '0';
+    else el.value = '';
+  });
+}
+document.getElementById('btnClear').addEventListener('click', clearAddForm);
+
+/* ===== EDIT MODAL ===== */
+const MODAL_FIELDS = [
+  {col:'so',         label:'Sales Order',   type:'text',   req:true},
+  {col:'item',       label:'Item',          type:'text',   req:true},
+  {col:'sale_price', label:'Unit Price (฿)',type:'number', req:true},
+  {col:'cost_price', label:'ต้นทุน/ชิ้น (฿)',type:'number',req:false},
+  {col:'qty',        label:'QTY. รวม',      type:'number', req:true},
+  {col:'deposit',    label:'รอ INV.',        type:'number', req:false},
+  {col:'inv',        label:'INV. แล้ว',      type:'number', req:false},
+  {col:'stored',     label:'ฝากของ',         type:'number', req:false},
+  {col:'salesco',    label:'Sales Co.',      type:'select', req:true,
+    opts:['Papitchaya','Jureemas','Patcharaporn']},
+  {col:'update_note',label:'หมายเหตุ',       type:'text',   req:false},
+];
+
+function openEdit(id) {
+  const r = allData.find(x => x.id === id);
+  if (!r) return;
+  editingId = id;
+  document.getElementById('modalTitle').textContent = `✏️ แก้ไข — ${r.so} / ${r.item}`;
+  document.getElementById('modalForm').innerHTML = MODAL_FIELDS.map(f => {
+    const val = r[f.col] ?? '';
+    if (f.type === 'select') {
+      const opts = f.opts.map(o => `<option value="${o}" ${o===val?'selected':''}>${o}</option>`).join('');
+      return `<div class="form-group">
+        <label>${f.label}${f.req?' *':''}</label>
+        <select id="m_${f.col}">${opts}</select>
+      </div>`;
+    }
+    return `<div class="form-group">
+      <label>${f.label}${f.req?' *':''}</label>
+      <input type="${f.type}" id="m_${f.col}" value="${val}" ${f.req?'required':''}/>
+    </div>`;
+  }).join('');
+  document.getElementById('editModal').classList.remove('hidden');
+}
+
+function closeModal() {
+  document.getElementById('editModal').classList.add('hidden');
+  editingId = null;
+}
+document.getElementById('modalClose').addEventListener('click', closeModal);
+document.getElementById('modalCancel').addEventListener('click', closeModal);
+
+document.getElementById('modalSave').addEventListener('click', async () => {
+  if (!editingId) return;
+  const data = {};
+  let valid = true;
+  MODAL_FIELDS.forEach(f => {
+    const el = document.getElementById('m_' + f.col);
+    if (!el) return;
+    el.classList.remove('err');
+    const v = el.value.trim();
+    if (f.req && !v) { el.classList.add('err'); valid = false; return; }
+    data[f.col] = f.type === 'number' ? (v === '' ? null : Number(v)) : v;
+  });
+  if (!valid) { toast('กรุณากรอกข้อมูลที่จำเป็นให้ครบ', true); return; }
+
+  loading(true, 'กำลังบันทึก...');
+  try {
+    const res = await api(`orders?id=eq.${editingId}`, { method:'PATCH', body: JSON.stringify(data) });
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+    const idx = allData.findIndex(x => x.id === editingId);
+    if (idx !== -1) allData[idx] = {...allData[idx], ...data};
+    closeModal(); renderTable();
+    toast('✅ บันทึกสำเร็จ!');
+  } catch(e) {
+    toast('บันทึกไม่สำเร็จ: ' + e.message, true);
+  } finally { loading(false); }
+});
+
+/* ===== DELETE ===== */
+let deleteId = null;
+function confirmDelete(id) {
+  const r = allData.find(x => x.id === id);
+  if (!r) return;
+  deleteId = id;
+  document.getElementById('confirmMsg').textContent = `จะลบ "${r.so} / ${r.item}" ออกจากระบบ ไม่สามารถกู้คืนได้`;
+  document.getElementById('confirmOverlay').classList.remove('hidden');
+}
+document.getElementById('confirmCancel').addEventListener('click', () => {
+  document.getElementById('confirmOverlay').classList.add('hidden'); deleteId = null;
+});
+document.getElementById('confirmOk').addEventListener('click', async () => {
+  if (!deleteId) return;
+  document.getElementById('confirmOverlay').classList.add('hidden');
+  loading(true, 'กำลังลบ...');
+  try {
+    const res = await api(`orders?id=eq.${deleteId}`, { method:'DELETE' });
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+    allData = allData.filter(x => x.id !== deleteId);
+    renderTable(); toast('🗑️ ลบรายการสำเร็จ');
+  } catch(e) {
+    toast('ลบไม่สำเร็จ: ' + e.message, true);
+  } finally { loading(false); deleteId = null; }
+});
+
+/* ===== SEARCH ===== */
+['tblSearch','tblSales'].forEach(id => document.getElementById(id).addEventListener('input', renderTable));
+document.getElementById('btnReload').addEventListener('click', loadData);
+
+/* ===== LOGIN ===== */
+const PASSWORD = 'admin.ppcy';
+const SESSION_KEY = 'ap_admin_auth';
+
+function checkSession() {
+  return sessionStorage.getItem(SESSION_KEY) === '1';
+}
+function unlockAdmin() {
+  sessionStorage.setItem(SESSION_KEY, '1');
+  document.getElementById('loginScreen').classList.add('hidden');
+  loadData();
+}
+function tryLogin() {
+  const val = document.getElementById('loginInput').value;
+  const errEl = document.getElementById('loginErr');
+  const input = document.getElementById('loginInput');
+  if (val === PASSWORD) {
+    input.classList.remove('err');
+    errEl.textContent = '';
+    unlockAdmin();
+  } else {
+    input.classList.add('err');
+    errEl.textContent = '❌ รหัสผ่านไม่ถูกต้อง';
+    input.value = '';
+    input.focus();
+    setTimeout(() => input.classList.remove('err'), 500);
+  }
+}
+document.getElementById('btnLogin').addEventListener('click', tryLogin);
+document.getElementById('loginInput').addEventListener('keydown', e => { if (e.key === 'Enter') tryLogin(); });
+document.getElementById('eyeBtn').addEventListener('click', () => {
+  const inp = document.getElementById('loginInput');
+  inp.type = inp.type === 'password' ? 'text' : 'password';
+});
+
+/* ===== INIT ===== */
+if (checkSession()) {
+  document.getElementById('loginScreen').classList.add('hidden');
+  loadData();
+} else {
+  document.getElementById('loadingOverlay').classList.add('hidden');
+  setTimeout(() => document.getElementById('loginInput').focus(), 100);
+}
+</script>
+</body>
+</html>
