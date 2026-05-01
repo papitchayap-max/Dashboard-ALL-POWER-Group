@@ -1,0 +1,1173 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>📘 อธิบายโค้ด — ALL POWER Dashboard</title>
+<link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;500;600;700;800&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet"/>
+<style>
+:root {
+  --navy:   #1b3a5c;
+  --blue:   #2563a8;
+  --sky:    #e8f4fd;
+  --green:  #1a7a4a;
+  --green-lt:#e8f5ee;
+  --orange: #d9651a;
+  --orange-lt:#fff0e6;
+  --red:    #c0392b;
+  --red-lt: #fef2f2;
+  --purple: #6d28d9;
+  --purple-lt:#f5f3ff;
+  --amber:  #92400e;
+  --amber-lt:#fffbeb;
+  --gray-50:#f8f9fc;
+  --gray-100:#eef1f6;
+  --gray-700:#3d4a5e;
+  --text:   #1a2a3a;
+  --white:  #ffffff;
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: 'Sarabun', sans-serif;
+  background: #dce8f5;
+  background-image: radial-gradient(circle, rgba(37,99,168,0.06) 1px, transparent 1px);
+  background-size: 28px 28px;
+  color: var(--text);
+  padding: 2rem;
+  font-size: 17px;
+  line-height: 1.7;
+}
+a { color: var(--blue); }
+
+/* HEADER */
+.doc-header {
+  background: linear-gradient(135deg, var(--navy), var(--blue));
+  color: #fff;
+  border-radius: 16px;
+  padding: 32px 40px;
+  margin-bottom: 2rem;
+  box-shadow: 0 4px 24px rgba(27,58,92,0.2);
+}
+.doc-header h1 { font-size: 28px; font-weight: 800; margin-bottom: 6px; }
+.doc-header p  { font-size: 16px; opacity: 0.8; }
+.doc-header .badges { display: flex; gap: 10px; margin-top: 14px; flex-wrap: wrap; }
+.doc-badge {
+  background: rgba(255,255,255,0.15);
+  border: 1px solid rgba(255,255,255,0.3);
+  border-radius: 20px; padding: 4px 14px;
+  font-size: 13px; font-weight: 700;
+}
+
+/* Button HEADER */
+.page-header{display:flex;align-items:center;gap:16px;margin-bottom:1.5rem}
+
+.btn-group {
+  display: flex;
+  gap: 10px; /* ระยะห่างระหว่างปุ่ม */
+  margin-left: auto;/* ชิดขวา */
+}
+.btn-back{
+  margin-left:0;font-family:'Sarabun',sans-serif;
+  font-size:15px;font-weight:700;padding:9px 20px;border-radius:8px;border:none;
+  background:var(--gray-100);color:var(--navy);cursor:pointer;
+  text-decoration:none;display:inline-flex;align-items:center;gap:6px;
+  transition:all 0.15s;
+}
+.btn-back:hover{background:var(--gray-200)}
+.btn-read {
+  margin-left: 0;
+  font-family: 'Sarabun', sans-serif;
+  font-size: 15px; font-weight: 700;
+  padding: 9px 20px; border-radius: 8px;
+  border: none;
+  background: linear-gradient(135deg, var(--blue), var(--navy));
+  color: #fff; cursor: pointer;
+  box-shadow: 0 2px 8px rgba(37,99,168,0.3);
+  transition: all 0.15s;
+  text-decoration: none; display: inline-flex; align-items: center; gap: 6px;
+}
+.btn-read:hover { opacity: 0.88; transform: translateY(-1px); }
+
+.btn-admin {
+  margin-left: 0;
+  font-family: 'Sarabun', sans-serif;
+  font-size: 15px; font-weight: 700;
+  padding: 9px 20px; border-radius: 8px;
+  border: none;
+  background: linear-gradient(135deg, var(--blue), var(--navy));
+  color: #fff; cursor: pointer;
+  box-shadow: 0 2px 8px rgba(37,99,168,0.3);
+  transition: all 0.15s;
+  text-decoration: none; display: inline-flex; align-items: center; gap: 6px;
+}
+.btn-admin:hover { opacity: 0.88; transform: translateY(-1px); }
+
+
+/* TOC */
+.toc {
+  background: var(--white);
+  border-radius: 14px;
+  padding: 24px 28px;
+  margin-bottom: 2rem;
+  box-shadow: 0 2px 12px rgba(27,58,92,0.09);
+}
+.toc h2 { font-size: 17px; font-weight: 800; color: var(--navy); margin-bottom: 12px; }
+.toc-list { list-style: none; display: flex; flex-direction: column; gap: 4px; }
+.toc-list li a {
+  text-decoration: none; color: var(--blue); font-weight: 600; font-size: 15px;
+  padding: 3px 0; display: block;
+}
+.toc-list li a:hover { text-decoration: underline; }
+.toc-list .sub { padding-left: 20px; font-size: 14px; }
+
+/* SECTION */
+.section {
+  background: var(--white);
+  border-radius: 14px;
+  box-shadow: 0 2px 12px rgba(27,58,92,0.09);
+  margin-bottom: 2rem;
+  overflow: hidden;
+}
+.section-header {
+  padding: 18px 28px;
+  border-bottom: 1px solid var(--gray-100);
+  display: flex; align-items: center; gap: 12px;
+}
+.section-icon { font-size: 24px; }
+.section-title { font-size: 20px; font-weight: 800; color: var(--navy); }
+.section-sub { font-size: 14px; color: #8a94a8; font-weight: 500; margin-top: 2px; }
+.section-body { padding: 24px 28px; }
+
+/* SUBSECTION */
+.sub-section { margin-bottom: 28px; }
+.sub-section:last-child { margin-bottom: 0; }
+.sub-title {
+  font-size: 16px; font-weight: 800; color: var(--navy);
+  margin-bottom: 10px; display: flex; align-items: center; gap: 8px;
+}
+.sub-title::before {
+  content: ''; display: inline-block;
+  width: 4px; height: 18px; border-radius: 2px;
+  background: var(--blue); flex-shrink: 0;
+}
+
+/* CODE BLOCK */
+.code-block {
+  background: #0f1923;
+  border-radius: 10px;
+  padding: 16px 20px;
+  margin: 10px 0;
+  overflow-x: auto;
+  font-family: 'Fira Code', monospace;
+  font-size: 13.5px;
+  line-height: 1.7;
+  color: #e2e8f0;
+}
+.code-line { display: block; }
+.c-comment  { color: #6a8f5e; font-style: italic; }
+.c-key      { color: #7dd3fc; }   /* CSS property / JS keyword */
+.c-val      { color: #fca5a5; }   /* CSS value */
+.c-str      { color: #86efac; }   /* strings */
+.c-fn       { color: #fde68a; }   /* function name */
+.c-tag      { color: #93c5fd; }   /* HTML tag */
+.c-attr     { color: #a5b4fc; }   /* attribute */
+.c-num      { color: #fdba74; }   /* number */
+.c-op       { color: #f0abfc; }   /* operator */
+
+/* CALLOUT BOXES */
+.callout {
+  border-radius: 10px; padding: 14px 18px;
+  margin: 12px 0; display: flex; gap: 12px; align-items: flex-start;
+  font-size: 15px; font-weight: 600; line-height: 1.6;
+}
+.callout-icon { font-size: 20px; flex-shrink: 0; margin-top: 1px; }
+.callout.info   { background: var(--sky);       border-left: 4px solid var(--blue);   color: #1e3a5f; }
+.callout.tip    { background: var(--green-lt);  border-left: 4px solid var(--green);  color: #14532d; }
+.callout.warn   { background: var(--amber-lt);  border-left: 4px solid #d97706;       color: var(--amber); }
+.callout.example{ background: var(--purple-lt); border-left: 4px solid var(--purple); color: #4c1d95; }
+.callout.note   { background: var(--orange-lt); border-left: 4px solid var(--orange); color: #7c2d12; }
+
+/* TERM TABLE */
+.term-table { width: 100%; border-collapse: collapse; margin: 12px 0; font-size: 15px; }
+.term-table th {
+  background: var(--navy); color: #fff;
+  padding: 10px 14px; text-align: left; font-size: 14px;
+}
+.term-table td { padding: 10px 14px; border-bottom: 1px solid var(--gray-100); vertical-align: top; }
+.term-table tr:last-child td { border-bottom: none; }
+.term-table tr:nth-child(even) td { background: var(--gray-50); }
+.term-table .cmd {
+  font-family: 'Fira Code', monospace; font-size: 13px;
+  background: #0f1923; color: #7dd3fc;
+  padding: 2px 8px; border-radius: 5px; white-space: nowrap;
+}
+.term-table .tag-hl {
+  display: inline-block;
+  padding: 2px 10px; border-radius: 12px;
+  font-size: 12px; font-weight: 700;
+}
+.tag-html  { background: #dbeafe; color: #1e40af; }
+.tag-css   { background: #fce7f3; color: #9d174d; }
+.tag-js    { background: #fef9c3; color: #713f12; }
+
+/* FLOW DIAGRAM */
+.flow {
+  display: flex; flex-wrap: wrap; gap: 6px;
+  align-items: center; margin: 14px 0;
+  font-size: 14px;
+}
+.flow-box {
+  background: var(--sky); border: 1.5px solid #93c5fd;
+  border-radius: 8px; padding: 8px 14px;
+  font-weight: 700; color: var(--navy); text-align: center;
+}
+.flow-box.db   { background: #f0fdf4; border-color: #86efac; color: #14532d; }
+.flow-box.ui   { background: #fdf4ff; border-color: #e879f9; color: #7e22ce; }
+.flow-box.fn   { background: #fff7ed; border-color: #fb923c; color: #7c2d12; }
+.flow-arrow    { font-size: 18px; color: #94a3b8; }
+
+/* DIVIDER */
+.divider { border: none; border-top: 1px solid var(--gray-100); margin: 20px 0; }
+
+/* HIGHLIGHT inline code */
+code {
+  font-family: 'Fira Code', monospace; font-size: 13px;
+  background: #f1f5f9; color: #1e3a5f;
+  padding: 2px 7px; border-radius: 5px;
+}
+
+@media (max-width: 768px) {
+  body { padding: 1rem; font-size: 15px; }
+  .doc-header { padding: 20px; }
+  .section-body { padding: 16px 18px; }
+}
+</style>
+</head>
+<body>
+<div class="page-header">
+
+   <div class="btn-group">
+  <a href="index.html" class="btn-back">กลับ Dashboard</a>
+  <a href="admin.html" class="btn-read">กลับ จัดการข้อมูล </a>
+</div>
+</div>
+
+
+<!-- ====== HEADER ====== -->
+<div class="doc-header">
+  <h1>📘 คู่มืออธิบายโค้ด — ALL POWER Dashboard</h1>
+  <p>อธิบายทุกคำสั่งในไฟล์ index.html และ admin.html สำหรับผู้เริ่มหัดเขียนโค้ด</p>
+  <div class="badges">
+    <span class="doc-badge">🌐 HTML</span>
+    <span class="doc-badge">🎨 CSS</span>
+    <span class="doc-badge">⚡ JavaScript</span>
+  </div>
+
+
+</div>
+
+<!-- ====== TOC ====== -->
+<div class="toc">
+  <h2>📋 สารบัญ</h2>
+  <ul class="toc-list">
+    <li><a href="#s1">1. โครงสร้างไฟล์ HTML — เว็บหน้านึงทำงานยังไง?</a></li>
+    <li><a href="#s2">2. CSS — ตกแต่งหน้าตาให้สวยงาม</a>
+      <ul class="toc-list">
+        <li class="sub"><a href="#s2-1">2.1 ตัวแปรสี :root</a></li>
+        <li class="sub"><a href="#s2-2">2.2 Layout — Flex & Grid</a></li>
+        <li class="sub"><a href="#s2-3">2.3 Animation & Transition</a></li>
+        <li class="sub"><a href="#s2-4">2.4 Responsive — @media</a></li>
+        <li class="sub"><a href="#s2-5">2.5 CSS คลาสสำคัญในเว็บนี้</a></li>
+      </ul>
+    </li>
+    <li><a href="#s3">3. JavaScript — การทำงานของโค้ด</a>
+      <ul class="toc-list">
+        <li class="sub"><a href="#s3-1">3.1 ตัวแปร (Variables) — เก็บข้อมูล</a></li>
+        <li class="sub"><a href="#s3-2">3.2 ฟังก์ชัน (Functions) — ชุดคำสั่ง</a></li>
+        <li class="sub"><a href="#s3-3">3.3 Array Methods — จัดการข้อมูลชุด</a></li>
+        <li class="sub"><a href="#s3-4">3.4 DOM — ควบคุม HTML ด้วย JS</a></li>
+        <li class="sub"><a href="#s3-5">3.5 Events — รับมือการกระทำของผู้ใช้</a></li>
+        <li class="sub"><a href="#s3-6">3.6 Async / Await — ดึงข้อมูลจาก API</a></li>
+        <li class="sub"><a href="#s3-7">3.7 Template Literals — สร้าง HTML ใน JS</a></li>
+      </ul>
+    </li>
+    <li><a href="#s4">4. Supabase API — ฐานข้อมูล Cloud</a></li>
+    <li><a href="#s5">5. ไฟล์ index.html — อ่านทีละส่วน</a></li>
+    <li><a href="#s6">6. ไฟล์ admin.html — อ่านทีละส่วน</a></li>
+    <li><a href="#s7">7. สรุปภาพรวม — ข้อมูลไหลยังไง?</a></li>
+  </ul>
+</div>
+
+
+<!-- ====== SECTION 1 ====== -->
+<div class="section" id="s1">
+  <div class="section-header">
+    <span class="section-icon">🌐</span>
+    <div>
+      <div class="section-title">1. โครงสร้างไฟล์ HTML</div>
+      <div class="section-sub">เว็บหน้านึงประกอบด้วยอะไรบ้าง?</div>
+    </div>
+  </div>
+  <div class="section-body">
+
+    <p>ไฟล์ <code>.html</code> ทุกไฟล์มีโครงสร้างหลัก 3 ส่วนเสมอ:</p>
+
+    <div class="code-block">
+<span class="code-line c-tag">&lt;!DOCTYPE html&gt;</span>
+<span class="code-line c-comment">&lt;!-- บอก Browser ว่านี่คือ HTML5 (มาตรฐานล่าสุด) --&gt;</span>
+<span class="code-line"></span>
+<span class="code-line c-tag">&lt;html lang="th"&gt;</span>
+<span class="code-line c-comment">  &lt;!-- ห่อทุกอย่างไว้  lang="th" = บอกว่าเนื้อหาเป็นภาษาไทย --&gt;</span>
+<span class="code-line"></span>
+<span class="code-line c-tag">  &lt;head&gt;</span>
+<span class="code-line c-comment">    &lt;!-- ส่วน "ความลับ" — ผู้ใช้ไม่เห็น แต่ Browser อ่าน --&gt;</span>
+<span class="code-line c-tag">    &lt;meta charset="UTF-8"/&gt;</span>
+<span class="code-line c-comment">    &lt;!-- รองรับภาษาไทย / อักขระพิเศษ --&gt;</span>
+<span class="code-line c-tag">    &lt;meta name="viewport" content="width=device-width, initial-scale=1.0"/&gt;</span>
+<span class="code-line c-comment">    &lt;!-- ทำให้เว็บดูดีบนมือถือ --&gt;</span>
+<span class="code-line c-tag">    &lt;title&gt;</span><span class="c-str">ALL POWER Group Dashboard</span><span class="c-tag">&lt;/title&gt;</span>
+<span class="code-line c-comment">    &lt;!-- ชื่อที่แสดงบน Tab ของ Browser --&gt;</span>
+<span class="code-line c-tag">    &lt;link href="...Google Fonts..." rel="stylesheet"/&gt;</span>
+<span class="code-line c-comment">    &lt;!-- โหลดฟ้อนต์ Sarabun จาก Google --&gt;</span>
+<span class="code-line c-tag">    &lt;style&gt;</span> <span class="c-comment">... CSS อยู่ตรงนี้ ...</span> <span class="c-tag">&lt;/style&gt;</span>
+<span class="code-line c-tag">  &lt;/head&gt;</span>
+<span class="code-line"></span>
+<span class="code-line c-tag">  &lt;body&gt;</span>
+<span class="code-line c-comment">    &lt;!-- ส่วนที่ผู้ใช้เห็น — ใส่ div, table, button ฯลฯ ตรงนี้ --&gt;</span>
+<span class="code-line c-tag">    &lt;script&gt;</span> <span class="c-comment">... JavaScript อยู่ตรงนี้ (ท้ายสุดเสมอ) ...</span> <span class="c-tag">&lt;/script&gt;</span>
+<span class="code-line c-tag">  &lt;/body&gt;</span>
+<span class="code-line c-tag">&lt;/html&gt;</span>
+    </div>
+
+    <div class="callout info">
+      <span class="callout-icon">💡</span>
+      <div>ทำไม <code>&lt;script&gt;</code> ถึงอยู่ล่างสุด? เพราะ JS ต้องรอให้ HTML โหลดก่อน ถ้าใส่ไว้ข้างบน JS จะหา <code>div</code> ไม่เจอและพัง</div>
+    </div>
+
+    <hr class="divider"/>
+
+    <div class="sub-title">HTML Tags ที่ใช้ในเว็บนี้</div>
+    <table class="term-table">
+      <tr><th>Tag</th><th>ใช้ทำอะไร</th><th>ตัวอย่างในเว็บนี้</th></tr>
+      <tr>
+        <td><code>&lt;div&gt;</code></td>
+        <td>กล่องสารพัดประโยชน์ ใช้จัดกลุ่ม element</td>
+        <td><code>class="panel"</code>, <code>class="metric"</code></td>
+      </tr>
+      <tr>
+        <td><code>&lt;span&gt;</code></td>
+        <td>กล่องเล็กๆ อยู่ในบรรทัด ใช้ตกแต่งข้อความ</td>
+        <td><code>class="badge"</code>, <code>class="dim"</code></td>
+      </tr>
+      <tr>
+        <td><code>&lt;table&gt; &lt;thead&gt; &lt;tbody&gt; &lt;tfoot&gt;</code></td>
+        <td>ตาราง — head = หัวตาราง, body = ข้อมูล, foot = แถวรวม</td>
+        <td>ตารางรายการ SO ทั้งหมด</td>
+      </tr>
+      <tr>
+        <td><code>&lt;tr&gt; &lt;th&gt; &lt;td&gt;</code></td>
+        <td>tr = แถว, th = ช่องหัว (bold), td = ช่องข้อมูล</td>
+        <td>แต่ละแถวใน renderTable()</td>
+      </tr>
+      <tr>
+        <td><code>&lt;button&gt;</code></td>
+        <td>ปุ่มกด — ต้องมี event listener จึงจะทำงาน</td>
+        <td>ปุ่ม "เพิ่มรายการ", "บันทึก", "ลบ"</td>
+      </tr>
+      <tr>
+        <td><code>&lt;input&gt;</code></td>
+        <td>ช่องกรอกข้อมูล — <code>type</code> กำหนดชนิด</td>
+        <td><code>type="text"</code>, <code>type="number"</code>, <code>type="checkbox"</code></td>
+      </tr>
+      <tr>
+        <td><code>&lt;select&gt; &lt;option&gt;</code></td>
+        <td>Dropdown เลือกตัวเลือก</td>
+        <td>ฟิลเตอร์ Sales Co., ฟิลเตอร์สถานะ</td>
+      </tr>
+      <tr>
+        <td><code>&lt;a&gt;</code></td>
+        <td>Link — <code>href</code> คือปลายทาง</td>
+        <td>ปุ่ม "จัดการข้อมูล" ลิงก์ไป admin.html</td>
+      </tr>
+    </table>
+  </div>
+</div>
+
+
+<!-- ====== SECTION 2 ====== -->
+<div class="section" id="s2">
+  <div class="section-header">
+    <span class="section-icon">🎨</span>
+    <div>
+      <div class="section-title">2. CSS — ตกแต่งหน้าตา</div>
+      <div class="section-sub">CSS คือภาษาที่บอกว่าแต่ละ element ควรหน้าตาเป็นยังไง</div>
+    </div>
+  </div>
+  <div class="section-body">
+
+    <!-- 2.1 -->
+    <div class="sub-section" id="s2-1">
+      <div class="sub-title">2.1 ตัวแปรสี — :root { }</div>
+      <p>แทนที่จะพิมพ์ <code>#1b3a5c</code> ซ้ำๆ ทุกที่ เราเก็บไว้ในตัวแปรครั้งเดียว แล้วเรียกใช้ผ่าน <code>var(--ชื่อ)</code></p>
+
+      <div class="code-block">
+<span class="code-line c-tag">:root</span> <span class="c-op">{</span>
+<span class="code-line c-comment">  /* ประกาศตัวแปร CSS — ขึ้นต้นด้วย -- เสมอ */</span>
+<span class="code-line">  <span class="c-key">--navy</span>:    <span class="c-val">#1b3a5c</span>;   <span class="c-comment">/* สีน้ำเงินเข้ม ใช้เป็น Header */</span></span>
+<span class="code-line">  <span class="c-key">--blue</span>:    <span class="c-val">#2563a8</span>;   <span class="c-comment">/* สีน้ำเงินกลาง */</span></span>
+<span class="code-line">  <span class="c-key">--red</span>:     <span class="c-val">#c0392b</span>;   <span class="c-comment">/* สีแดง ใช้กับค่า Warning */</span></span>
+<span class="code-line">  <span class="c-key">--radius</span>:  <span class="c-val">10px</span>;       <span class="c-comment">/* ความมนของมุมกล่อง */</span></span>
+<span class="code-line">  <span class="c-key">--shadow</span>:  <span class="c-val">0 2px 12px rgba(27,58,92,0.09)</span>; <span class="c-comment">/* เงาอ่อนๆ */</span></span>
+<span class="c-op">}</span>
+<span class="code-line"></span>
+<span class="code-line c-comment">/* วิธีเรียกใช้ */</span>
+<span class="code-line"><span class="c-tag">.metric</span> <span class="c-op">{</span></span>
+<span class="code-line">  <span class="c-key">background</span>: <span class="c-fn">var</span>(<span class="c-val">--white</span>);       <span class="c-comment">/* แทนที่จะพิมพ์ #ffffff */</span></span>
+<span class="code-line">  <span class="c-key">border-radius</span>: <span class="c-fn">var</span>(<span class="c-val">--radius</span>);  <span class="c-comment">/* แทนที่จะพิมพ์ 10px */</span></span>
+<span class="code-line">  <span class="c-key">box-shadow</span>: <span class="c-fn">var</span>(<span class="c-val">--shadow</span>);    <span class="c-comment">/* เงา */</span></span>
+<span class="c-op">}</span>
+      </div>
+
+      <div class="callout tip">
+        <span class="callout-icon">✅</span>
+        <div>ข้อดีของตัวแปร CSS: ถ้าอยากเปลี่ยนสีธีมทั้งเว็บ แค่แก้ใน <code>:root</code> ที่เดียว ทุกที่อัปเดตพร้อมกัน!</div>
+      </div>
+    </div>
+
+    <hr class="divider"/>
+
+    <!-- 2.2 -->
+    <div class="sub-section" id="s2-2">
+      <div class="sub-title">2.2 Layout — Flexbox & Grid</div>
+
+      <p><strong>Flexbox</strong> — จัดของให้เรียงแนวนอนหรือแนวตั้ง</p>
+      <div class="code-block">
+<span class="code-line c-tag">.page-header</span> <span class="c-op">{</span>
+<span class="code-line">  <span class="c-key">display</span>: <span class="c-val">flex</span>;          <span class="c-comment">/* เปิด Flexbox */</span></span>
+<span class="code-line">  <span class="c-key">align-items</span>: <span class="c-val">center</span>;  <span class="c-comment">/* จัดกึ่งกลางแนวตั้ง */</span></span>
+<span class="code-line">  <span class="c-key">gap</span>: <span class="c-val">16px</span>;            <span class="c-comment">/* ระยะห่างระหว่าง item */</span></span>
+<span class="c-op">}</span>
+<span class="code-line c-tag">.btn-admin</span> <span class="c-op">{</span>
+<span class="code-line">  <span class="c-key">margin-left</span>: <span class="c-val">auto</span>;    <span class="c-comment">/* ดันปุ่มไปชิดขวาสุด */</span></span>
+<span class="c-op">}</span>
+      </div>
+
+      <p><strong>CSS Grid</strong> — แบ่งพื้นที่เป็นตารางอัตโนมัติ ใช้กับ KPI Cards</p>
+      <div class="code-block">
+<span class="code-line c-tag">.summary-grid</span> <span class="c-op">{</span>
+<span class="code-line">  <span class="c-key">display</span>: <span class="c-val">grid</span>;</span>
+<span class="code-line">  <span class="c-key">grid-template-columns</span>: <span class="c-fn">repeat</span>(<span class="c-val">auto-fill, minmax(200px, 1fr)</span>);</span>
+<span class="code-line">  <span class="c-comment">/* auto-fill = สร้างคอลัมน์ให้เต็มพื้นที่                   */</span></span>
+<span class="code-line">  <span class="c-comment">/* minmax(200px, 1fr) = แต่ละช่องกว้างอย่างน้อย 200px       */</span></span>
+<span class="code-line">  <span class="c-comment">/* ผล: หน้าจอใหญ่ = 4 การ์ด, หน้าจอเล็ก = 2-3 การ์ด        */</span></span>
+<span class="code-line">  <span class="c-key">gap</span>: <span class="c-val">16px</span>;  <span class="c-comment">/* ระยะห่างระหว่างการ์ด */</span></span>
+<span class="c-op">}</span>
+      </div>
+    </div>
+
+    <hr class="divider"/>
+
+    <!-- 2.3 -->
+    <div class="sub-section" id="s2-3">
+      <div class="sub-title">2.3 Animation & Transition — ความลื่นไหล</div>
+
+      <p><strong>Transition</strong> — ทำให้การเปลี่ยนแปลงสมูท เช่น hover</p>
+      <div class="code-block">
+<span class="code-line c-tag">.metric</span> <span class="c-op">{</span>
+<span class="code-line">  <span class="c-key">transition</span>: <span class="c-val">transform 0.15s, box-shadow 0.15s</span>;</span>
+<span class="code-line">  <span class="c-comment">/* เมื่อ transform หรือ box-shadow เปลี่ยน ให้ค่อยๆ เปลี่ยน 0.15 วินาที */</span></span>
+<span class="c-op">}</span>
+<span class="code-line c-tag">.metric:hover</span> <span class="c-op">{</span>
+<span class="code-line">  <span class="c-key">transform</span>: <span class="c-fn">translateY</span>(<span class="c-val">-2px</span>);  <span class="c-comment">/* ลอยขึ้น 2px เมื่อ hover */</span></span>
+<span class="code-line">  <span class="c-key">box-shadow</span>: <span class="c-fn">var</span>(<span class="c-val">--shadow-lg</span>);   <span class="c-comment">/* เงาเข้มขึ้น */</span></span>
+<span class="c-op">}</span>
+      </div>
+
+      <p><strong>@keyframes + animation</strong> — สร้างการเคลื่อนไหวต่อเนื่อง เช่น Loading Spinner</p>
+      <div class="code-block">
+<span class="code-line c-tag">@keyframes spin</span> <span class="c-op">{</span>
+<span class="code-line">  <span class="c-key">to</span> <span class="c-op">{</span> <span class="c-key">transform</span>: <span class="c-fn">rotate</span>(<span class="c-val">360deg</span>); <span class="c-op">}</span></span>
+<span class="code-line">  <span class="c-comment">/* "to" คือ จาก 0° หมุนไป 360° (1 รอบ) */</span></span>
+<span class="c-op">}</span>
+<span class="code-line c-tag">.spinner</span> <span class="c-op">{</span>
+<span class="code-line">  <span class="c-key">animation</span>: <span class="c-val">spin 0.8s linear infinite</span>;</span>
+<span class="code-line">  <span class="c-comment">/* spin = ชื่อ keyframe | 0.8s = ความเร็ว | infinite = วนไม่หยุด */</span></span>
+<span class="c-op">}</span>
+      </div>
+
+      <p><strong>Toast (admin.html)</strong> — กล่องแจ้งเตือนที่เลื่อนขึ้นมา</p>
+      <div class="code-block">
+<span class="code-line c-tag">#toast</span> <span class="c-op">{</span>
+<span class="code-line">  <span class="c-key">transform</span>: <span class="c-fn">translateY</span>(<span class="c-val">80px</span>);  <span class="c-comment">/* ซ่อนไว้ใต้หน้าจอ */</span></span>
+<span class="code-line">  <span class="c-key">opacity</span>: <span class="c-val">0</span>;                   <span class="c-comment">/* โปร่งใส (มองไม่เห็น) */</span></span>
+<span class="code-line">  <span class="c-key">transition</span>: <span class="c-val">all 0.3s</span>;</span>
+<span class="c-op">}</span>
+<span class="code-line c-tag">#toast.show</span> <span class="c-op">{</span>
+<span class="code-line">  <span class="c-key">transform</span>: <span class="c-fn">translateY</span>(<span class="c-val">0</span>);     <span class="c-comment">/* เลื่อนขึ้นมาที่ตำแหน่งปกติ */</span></span>
+<span class="code-line">  <span class="c-key">opacity</span>: <span class="c-val">1</span>;                   <span class="c-comment">/* มองเห็นได้ */</span></span>
+<span class="c-op">}</span>
+      </div>
+    </div>
+
+    <hr class="divider"/>
+
+    <!-- 2.4 -->
+    <div class="sub-section" id="s2-4">
+      <div class="sub-title">2.4 Responsive — @media</div>
+      <p>ทำให้หน้าเว็บแสดงผลต่างกันตามขนาดหน้าจอ</p>
+      <div class="code-block">
+<span class="code-line c-tag">@media (max-width: 768px)</span> <span class="c-op">{</span>
+<span class="code-line">  <span class="c-comment">/* CSS ข้างในนี้จะทำงานเฉพาะเมื่อหน้าจอ ≤ 768px (มือถือ/แท็บเล็ต) */</span></span>
+<span class="code-line">  <span class="c-tag">body</span> <span class="c-op">{</span> <span class="c-key">padding</span>: <span class="c-val">0.8rem</span>; <span class="c-key">font-size</span>: <span class="c-val">14px</span>; <span class="c-op">}</span></span>
+<span class="code-line">  <span class="c-tag">.toolbar input#searchInput</span> <span class="c-op">{</span> <span class="c-key">width</span>: <span class="c-val">100%</span>; <span class="c-op">}</span>  <span class="c-comment">/* ช่องค้นหาเต็มความกว้าง */</span></span>
+<span class="c-op">}</span>
+      </div>
+    </div>
+
+    <hr class="divider"/>
+
+    <!-- 2.5 -->
+    <div class="sub-section" id="s2-5">
+      <div class="sub-title">2.5 CSS Classes สำคัญในเว็บนี้</div>
+      <table class="term-table">
+        <tr><th>Class</th><th>ไฟล์</th><th>ทำอะไร</th></tr>
+        <tr><td><code>.hidden</code></td><td><span class="tag-hl tag-css">ทั้งคู่</span></td><td>ซ่อน element (<code>display: none</code>) — JS เพิ่ม/ลบ class นี้เพื่อซ่อน/แสดง</td></tr>
+        <tr><td><code>.selected-row</code></td><td><span class="tag-hl tag-css">index</span></td><td>แถวที่ถูกเช็คจะเปลี่ยนพื้นหลังเป็นสีฟ้าอ่อน</td></tr>
+        <tr><td><code>.badge-ready / abroad / stored-many</code></td><td><span class="tag-hl tag-css">index</span></td><td>ป้ายสถานะสีต่างๆ ในคอลัมน์สถานะ</td></tr>
+        <tr><td><code>.hidden-col</code></td><td><span class="tag-hl tag-css">index</span></td><td>ปุ่มซ่อนคอลัมน์ที่ถูกเปิดใช้งาน — เปลี่ยนสีเป็นแดง</td></tr>
+        <tr><td><code>.sort-active</code></td><td><span class="tag-hl tag-css">index</span></td><td>หัวตารางที่กำลัง sort — ลูกศรเปลี่ยนเป็นสีทอง</td></tr>
+        <tr><td><code>.err</code></td><td><span class="tag-hl tag-css">admin</span></td><td>ช่อง Input ที่ยังไม่ได้กรอก — เส้นขอบเป็นสีแดง</td></tr>
+        <tr><td><code>.show</code></td><td><span class="tag-hl tag-css">admin</span></td><td>Toast แจ้งเตือน เมื่อบันทึกสำเร็จ — เลื่อนขึ้นมาแสดง</td></tr>
+        <tr><td><code>.drag-over</code></td><td><span class="tag-hl tag-css">admin</span></td><td>กล่อง import เมื่อลากไฟล์มาวาง — เปลี่ยนสีขอบ</td></tr>
+      </table>
+    </div>
+
+  </div>
+</div>
+
+
+<!-- ====== SECTION 3 ====== -->
+<div class="section" id="s3">
+  <div class="section-header">
+    <span class="section-icon">⚡</span>
+    <div>
+      <div class="section-title">3. JavaScript — การทำงานของโค้ด</div>
+      <div class="section-sub">JS ทำให้เว็บ "มีชีวิต" — กดปุ่ม, โหลดข้อมูล, คำนวณ, แสดงผล</div>
+    </div>
+  </div>
+  <div class="section-body">
+
+    <!-- 3.1 -->
+    <div class="sub-section" id="s3-1">
+      <div class="sub-title">3.1 ตัวแปร (Variables) — เก็บข้อมูล</div>
+
+      <div class="code-block">
+<span class="code-line c-comment">/* ===== STATE ใน index.html ===== */</span>
+<span class="code-line"></span>
+<span class="code-line"><span class="c-key">let</span> raw = [];           <span class="c-comment">// Array เก็บข้อมูลทุก SO ที่ดึงมาจาก Supabase</span></span>
+<span class="code-line"><span class="c-key">let</span> sortCol = <span class="c-str">'depositVal'</span>; <span class="c-comment">// คอลัมน์ที่กำลัง sort อยู่</span></span>
+<span class="code-line"><span class="c-key">let</span> sortDir = <span class="c-num">-1</span>;       <span class="c-comment">// ทิศทาง: 1 = น้อย→มาก, -1 = มาก→น้อย</span></span>
+<span class="code-line"><span class="c-key">const</span> hiddenCols = <span class="c-key">new</span> <span class="c-fn">Set</span>([<span class="c-str">'costPrice'</span>, <span class="c-str">'remark'</span>]); <span class="c-comment">// คอลัมน์ที่ซ่อนอยู่</span></span>
+<span class="code-line"><span class="c-key">let</span> selectedRows = <span class="c-key">new</span> <span class="c-fn">Set</span>(); <span class="c-comment">// id ของแถวที่ถูกเช็คเลือก</span></span>
+<span class="code-line"><span class="c-key">let</span> searchTags = [];    <span class="c-comment">// คำค้นหาที่เพิ่มเป็น Tag แล้ว</span></span>
+      </div>
+
+      <table class="term-table">
+        <tr><th>คำสั่ง</th><th>ความต่าง</th></tr>
+        <tr>
+          <td><code>const</code></td>
+          <td>ค่าคงที่ — กำหนดครั้งเดียว เปลี่ยนไม่ได้ เช่น URL, API Key</td>
+        </tr>
+        <tr>
+          <td><code>let</code></td>
+          <td>ตัวแปร — เปลี่ยนค่าได้ตลอด เช่น sortCol, sortDir</td>
+        </tr>
+        <tr>
+          <td><code>new Set()</code></td>
+          <td>เหมือน Array แต่ไม่มีค่าซ้ำ เหมาะเก็บ id ที่เลือกไว้</td>
+        </tr>
+      </table>
+    </div>
+
+    <hr class="divider"/>
+
+    <!-- 3.2 -->
+    <div class="sub-section" id="s3-2">
+      <div class="sub-title">3.2 ฟังก์ชัน (Functions) — ชุดคำสั่ง</div>
+      <p>ฟังก์ชันคือกลุ่มคำสั่งที่ตั้งชื่อไว้ เรียกใช้ซ้ำได้ทุกเมื่อ</p>
+
+      <div class="code-block">
+<span class="code-line c-comment">/* แบบปกติ */</span>
+<span class="code-line"><span class="c-key">function</span> <span class="c-fn">showLoading</span>(v) <span class="c-op">{</span></span>
+<span class="code-line">  <span class="c-comment">// v คือ parameter (ค่าที่รับเข้ามา) — true = แสดง, false = ซ่อน</span></span>
+<span class="code-line">  document.<span class="c-fn">getElementById</span>(<span class="c-str">'loadingOverlay'</span>).<span class="c-key">classList</span>.<span class="c-fn">toggle</span>(<span class="c-str">'hidden'</span>, !v);</span>
+<span class="c-op">}</span>
+<span class="code-line"></span>
+<span class="code-line c-comment">/* Arrow Function — เขียนสั้นกว่า */</span>
+<span class="code-line"><span class="c-key">const</span> <span class="c-fn">api</span> = (path, opts = {}) =&gt; <span class="c-fn">fetch</span>(<span class="c-str">`...`</span>, opts);</span>
+<span class="code-line c-comment">// (path, opts) = รับค่า 2 ตัว, opts = {} คือค่า default ถ้าไม่ส่งมา</span>
+<span class="code-line"></span>
+<span class="code-line c-comment">/* ฟังก์ชัน Async — ต้องรอผล API */</span>
+<span class="code-line"><span class="c-key">async function</span> <span class="c-fn">loadData</span>() <span class="c-op">{</span></span>
+<span class="code-line">  <span class="c-key">const</span> res = <span class="c-key">await</span> <span class="c-fn">api</span>(<span class="c-str">'orders?select=*'</span>);</span>
+<span class="code-line">  <span class="c-comment">// await = หยุดรอจนกว่า API จะตอบกลับ</span></span>
+<span class="c-op">}</span>
+      </div>
+
+      <div class="callout note">
+        <span class="callout-icon">📌</span>
+        <div><strong>ฟังก์ชันหลักในเว็บนี้:</strong><br/>
+          <code>loadData()</code> — ดึงข้อมูลจาก Supabase<br/>
+          <code>computeFields()</code> — คำนวณ Amount, กำไร, ตปท.<br/>
+          <code>renderSummary()</code> — วาด KPI Cards<br/>
+          <code>renderTable()</code> — วาดตาราง (เรียกทุกครั้งที่ filter/sort เปลี่ยน)<br/>
+          <code>getStatus(r)</code> — คืนสถานะของแต่ละ SO
+        </div>
+      </div>
+    </div>
+
+    <hr class="divider"/>
+
+    <!-- 3.3 -->
+    <div class="sub-section" id="s3-3">
+      <div class="sub-title">3.3 Array Methods — จัดการข้อมูลชุด</div>
+      <p>เมธอดเหล่านี้ใช้บ่อยมากในการจัดการข้อมูล</p>
+
+      <table class="term-table">
+        <tr><th>เมธอด</th><th>ทำอะไร</th><th>ใช้ที่ไหนในเว็บ</th></tr>
+        <tr>
+          <td><code>.map(r => ...)</code></td>
+          <td>แปลงทุก item ในอาเรย์ คืนอาเรย์ใหม่ที่แปลงแล้ว</td>
+          <td><code>raw = data.map(r => ({id: r.id, so: r.so, ...}))</code><br/>แปลง JSON จาก API เป็นรูปแบบที่เราต้องการ</td>
+        </tr>
+        <tr>
+          <td><code>.filter(r => ...)</code></td>
+          <td>คัดกรองเฉพาะ item ที่ผ่านเงื่อนไข</td>
+          <td><code>raw.filter(r => getStatus(r) === fSt)</code><br/>กรองตาม filter สถานะ</td>
+        </tr>
+        <tr>
+          <td><code>.reduce((s, r) => s + r.amt, 0)</code></td>
+          <td>รวมค่าทั้งหมด (เหมือน SUM ใน Excel)<br/>s = ผลสะสม, r = ค่าปัจจุบัน, 0 = ค่าเริ่มต้น</td>
+          <td><code>filtered.reduce((s, r) => s + (r.saleAmt || 0), 0)</code><br/>รวม Amount ทั้งหมด</td>
+        </tr>
+        <tr>
+          <td><code>.forEach(item => ...)</code></td>
+          <td>วนซ้ำทุก item แต่ไม่คืนค่า</td>
+          <td><code>raw.forEach(r => { r.saleAmt = r.salePrice * r.order })</code><br/>คำนวณ saleAmt ทุก SO</td>
+        </tr>
+        <tr>
+          <td><code>.sort((a, b) => ...)</code></td>
+          <td>เรียงลำดับ — คืนค่า &lt;0, 0, &gt;0</td>
+          <td>Sort คอลัมน์เมื่อกดหัวตาราง</td>
+        </tr>
+        <tr>
+          <td><code>.find(x => x.id === id)</code></td>
+          <td>หาค่าตัวแรกที่ตรงเงื่อนไข คืน item นั้น</td>
+          <td><code>allData.find(x => x.id === id)</code><br/>หาข้อมูล SO ที่ต้องการแก้ไข</td>
+        </tr>
+        <tr>
+          <td><code>.every(r => ...)</code></td>
+          <td>ตรวจว่าทุก item ตรงเงื่อนไขหรือไม่</td>
+          <td><code>filtered.every(r => r.costAmt == null)</code><br/>ตรวจว่าทุกแถวไม่มีต้นทุน</td>
+        </tr>
+        <tr>
+          <td><code>.join('')</code></td>
+          <td>รวม Array of strings เป็น string เดียว</td>
+          <td><code>filtered.map(r => `&lt;tr&gt;...&lt;/tr&gt;`).join('')</code><br/>รวม HTML แถวทั้งหมดเป็นก้อนเดียว</td>
+        </tr>
+        <tr>
+          <td><code>.includes(t)</code></td>
+          <td>ตรวจว่ามีค่านี้ใน Array หรือไม่</td>
+          <td><code>searchTags.includes(v.toLowerCase())</code><br/>ไม่ให้ค้นหา tag ซ้ำ</td>
+        </tr>
+        <tr>
+          <td><code>.splice(i, 1)</code></td>
+          <td>ลบ item ออกจากตำแหน่ง i</td>
+          <td><code>searchTags.splice(+x.dataset.i, 1)</code><br/>ลบ tag ออกเมื่อกด ✕</td>
+        </tr>
+        <tr>
+          <td><code>.push(item)</code></td>
+          <td>เพิ่ม item ต่อท้าย Array</td>
+          <td><code>searchTags.push(v.toLowerCase())</code><br/>เพิ่ม tag ค้นหาใหม่</td>
+        </tr>
+      </table>
+    </div>
+
+    <hr class="divider"/>
+
+    <!-- 3.4 -->
+    <div class="sub-section" id="s3-4">
+      <div class="sub-title">3.4 DOM — ควบคุม HTML ด้วย JavaScript</div>
+      <p>DOM (Document Object Model) คือการมองหน้าเว็บเป็น Object ที่ JS ควบคุมได้</p>
+
+      <div class="code-block">
+<span class="code-line c-comment">/* หา element เดี่ยวด้วย id */</span>
+<span class="code-line"><span class="c-key">const</span> el = document.<span class="c-fn">getElementById</span>(<span class="c-str">'searchInput'</span>);</span>
+<span class="code-line c-comment">/* → หากล่อง input ที่มี id="searchInput" */</span>
+<span class="code-line"></span>
+<span class="code-line c-comment">/* หา element หลายอันด้วย CSS selector */</span>
+<span class="code-line">document.<span class="c-fn">querySelectorAll</span>(<span class="c-str">'.row-check'</span>).<span class="c-fn">forEach</span>(cb => {</span>
+<span class="code-line">  <span class="c-comment">// ทำอะไรกับ checkbox ทุกอัน</span></span>
+<span class="code-line">});</span>
+<span class="code-line"></span>
+<span class="code-line c-comment">/* เปลี่ยนเนื้อหา HTML ข้างใน */</span>
+<span class="code-line">document.<span class="c-fn">getElementById</span>(<span class="c-str">'tableBody'</span>).<span class="c-key">innerHTML</span> = <span class="c-str">`&lt;tr&gt;...&lt;/tr&gt;`</span>;</span>
+<span class="code-line c-comment">// innerHTML รองรับ HTML tags เช่น &lt;span&gt;</span></span>
+<span class="code-line"></span>
+<span class="code-line c-comment">/* เปลี่ยนข้อความธรรมดา (ไม่แปลง HTML tag) */</span>
+<span class="code-line">document.<span class="c-fn">getElementById</span>(<span class="c-str">'selCount'</span>).<span class="c-key">textContent</span> = selData.length;</span>
+<span class="code-line"></span>
+<span class="code-line c-comment">/* จัดการ class */</span>
+<span class="code-line">el.<span class="c-key">classList</span>.<span class="c-fn">add</span>(<span class="c-str">'hidden'</span>);        <span class="c-comment">// เพิ่ม class</span></span>
+<span class="code-line">el.<span class="c-key">classList</span>.<span class="c-fn">remove</span>(<span class="c-str">'hidden'</span>);     <span class="c-comment">// ลบ class</span></span>
+<span class="code-line">el.<span class="c-key">classList</span>.<span class="c-fn">toggle</span>(<span class="c-str">'hidden'</span>, !v); <span class="c-comment">// เพิ่มถ้า !v=true, ลบถ้า !v=false</span></span>
+<span class="code-line">el.<span class="c-key">classList</span>.<span class="c-fn">has</span>(<span class="c-str">'hidden'</span>);       <span class="c-comment">// ตรวจว่ามี class นั้นอยู่ไหม</span></span>
+<span class="code-line"></span>
+<span class="code-line c-comment">/* อ่านค่า dataset (ค่าใน data-xxx attribute) */</span>
+<span class="code-line"><span class="c-key">const</span> col = btn.<span class="c-key">dataset</span>.col;  <span class="c-comment">// &lt;button data-col="saleAmt"&gt; → "saleAmt"</span></span>
+<span class="code-line"><span class="c-key">const</span> id  = +cb.<span class="c-key">dataset</span>.id;   <span class="c-comment">// + ข้างหน้าแปลง string เป็น number</span></span>
+      </div>
+    </div>
+
+    <hr class="divider"/>
+
+    <!-- 3.5 -->
+    <div class="sub-section" id="s3-5">
+      <div class="sub-title">3.5 Events — รับมือการกระทำของผู้ใช้</div>
+
+      <div class="code-block">
+<span class="code-line c-comment">/* กดปุ่ม */</span>
+<span class="code-line">document.<span class="c-fn">getElementById</span>(<span class="c-str">'btnAdd'</span>).<span class="c-fn">addEventListener</span>(<span class="c-str">'click'</span>, <span class="c-key">async</span> () => {</span>
+<span class="code-line">  <span class="c-comment">// ทำงานเมื่อกดปุ่ม btnAdd</span></span>
+<span class="code-line">});</span>
+<span class="code-line"></span>
+<span class="code-line c-comment">/* พิมพ์ในช่อง input — ทุกครั้งที่พิมพ์ */</span>
+<span class="code-line">searchInput.<span class="c-fn">addEventListener</span>(<span class="c-str">'input'</span>, renderTable);</span>
+<span class="code-line c-comment">// 'input' = เรียก renderTable ทันทีที่ค่าเปลี่ยน</span></span>
+<span class="code-line"></span>
+<span class="code-line c-comment">/* กด Enter ในช่อง search */</span>
+<span class="code-line">searchInput.<span class="c-fn">addEventListener</span>(<span class="c-str">'keydown'</span>, e => {</span>
+<span class="code-line">  <span class="c-key">if</span> (e.key === <span class="c-str">'Enter'</span>) { <span class="c-comment">/* เพิ่ม tag */</span> }</span>
+<span class="code-line">});</span>
+<span class="code-line"></span>
+<span class="code-line c-comment">/* Checkbox เปลี่ยนสถานะ */</span>
+<span class="code-line">cb.<span class="c-fn">addEventListener</span>(<span class="c-str">'change'</span>, () => {</span>
+<span class="code-line">  <span class="c-key">if</span> (cb.checked) selectedRows.<span class="c-fn">add</span>(id);</span>
+<span class="code-line">  <span class="c-key">else</span> selectedRows.<span class="c-fn">delete</span>(id);</span>
+<span class="code-line">});</span>
+<span class="code-line"></span>
+<span class="code-line c-comment">/* วนลูปหลาย element พร้อมกัน */</span>
+<span class="code-line">[<span class="c-str">'filterStatus'</span>, <span class="c-str">'filterSales'</span>].<span class="c-fn">forEach</span>(id =></span>
+<span class="code-line">  document.<span class="c-fn">getElementById</span>(id).<span class="c-fn">addEventListener</span>(<span class="c-str">'input'</span>, renderTable)</span>
+<span class="code-line">);</span>
+<span class="code-line c-comment">// ทำให้ทั้ง filterStatus และ filterSales เรียก renderTable เมื่อเปลี่ยน</span></span>
+      </div>
+    </div>
+
+    <hr class="divider"/>
+
+    <!-- 3.6 -->
+    <div class="sub-section" id="s3-6">
+      <div class="sub-title">3.6 Async/Await + Try/Catch — ดึงข้อมูลจาก API</div>
+
+      <div class="code-block">
+<span class="code-line"><span class="c-key">async function</span> <span class="c-fn">loadData</span>() {</span>
+<span class="code-line">  <span class="c-fn">showLoading</span>(<span class="c-key">true</span>);    <span class="c-comment">// แสดง Spinner ก่อน</span></span>
+<span class="code-line">  <span class="c-key">try</span> {</span>
+<span class="code-line">    <span class="c-comment">// ลองทำ — ถ้าสำเร็จจะวิ่งถึงบรรทัดสุดท้ายใน try</span></span>
+<span class="code-line">    <span class="c-key">const</span> res = <span class="c-key">await</span> <span class="c-fn">api</span>(<span class="c-str">'orders?select=*&order=id.asc'</span>);</span>
+<span class="code-line">    <span class="c-comment">// await = หยุดรอ API ตอบก่อน ไม่เดินหน้าต่อ</span></span>
+<span class="code-line">    <span class="c-key">if</span> (!res.ok) <span class="c-key">throw new</span> <span class="c-fn">Error</span>(<span class="c-str">`HTTP ${res.status}`</span>);</span>
+<span class="code-line">    <span class="c-comment">// ถ้า response ไม่ ok (เช่น 404, 500) ให้ throw error</span></span>
+<span class="code-line">    <span class="c-key">const</span> data = <span class="c-key">await</span> res.<span class="c-fn">json</span>();</span>
+<span class="code-line">    <span class="c-comment">// แปลง response เป็น JSON object</span></span>
+<span class="code-line">    raw = data.<span class="c-fn">map</span>(r => ({...}));</span>
+<span class="code-line">    <span class="c-fn">renderTable</span>();</span>
+<span class="code-line">  } <span class="c-key">catch</span>(e) {</span>
+<span class="code-line">    <span class="c-comment">// ถ้าเกิด error ใดๆ ใน try จะมาที่นี่</span></span>
+<span class="code-line">    <span class="c-fn">showError</span>(<span class="c-str">'โหลดไม่สำเร็จ: '</span> + e.message);</span>
+<span class="code-line">  } <span class="c-key">finally</span> {</span>
+<span class="code-line">    <span class="c-comment">// ทำงานเสมอ ไม่ว่า try จะสำเร็จหรือ error</span></span>
+<span class="code-line">    <span class="c-fn">showLoading</span>(<span class="c-key">false</span>);  <span class="c-comment">// ซ่อน Spinner</span></span>
+<span class="code-line">  }</span>
+<span class="code-line">}</span>
+      </div>
+    </div>
+
+    <hr class="divider"/>
+
+    <!-- 3.7 -->
+    <div class="sub-section" id="s3-7">
+      <div class="sub-title">3.7 Template Literals — สร้าง HTML ใน JavaScript</div>
+      <p>ใช้ Backtick <code>`</code> แทน <code>'</code> เพื่อใส่ตัวแปรใน string ได้</p>
+
+      <div class="code-block">
+<span class="code-line c-comment">/* แบบเก่า — ไม่สะดวก */</span>
+<span class="code-line"><span class="c-str">'&lt;tr class="'</span> + selClass + <span class="c-str">'"&gt;&lt;td&gt;'</span> + r.so + <span class="c-str">'&lt;/td&gt;&lt;/tr&gt;'</span></span>
+<span class="code-line"></span>
+<span class="code-line c-comment">/* แบบใหม่ Template Literal — อ่านง่ายกว่ามาก */</span>
+<span class="code-line"><span class="c-str">`&lt;tr class="${selClass}"&gt;</span></span>
+<span class="code-line"><span class="c-str">   &lt;td&gt;${r.so}&lt;/td&gt;</span></span>
+<span class="code-line"><span class="c-str">   &lt;td&gt;${r.item}&lt;/td&gt;</span></span>
+<span class="code-line"><span class="c-str"> &lt;/tr&gt;`</span></span>
+<span class="code-line"><span class="c-comment">// ${...} = ใส่ค่าตัวแปรหรือ expression ข้างใน</span></span>
+<span class="code-line"></span>
+<span class="code-line c-comment">/* Conditional ใน Template Literal */</span>
+<span class="code-line"><span class="c-str">`${r.profit &gt; 0 ? fmtMoney(r.profit) + ' ฿' : '&lt;span class="dim"&gt;-&lt;/span&gt;'}`</span></span>
+<span class="code-line c-comment">// ? : คือ Ternary Operator — ถ้าเงื่อนไขจริง ? ทำนี่ : ไม่งั้นทำนี่</span></span>
+      </div>
+
+      <div class="callout example">
+        <span class="callout-icon">🧩</span>
+        <div>
+          <strong>Spread Operator <code>...</code></strong><br/>
+          <code>[...searchTags, ...(q ? [q] : [])]</code><br/>
+          <code>...</code> คือ "กระจาย" สมาชิกของอาเรย์ออกมา — รวม searchTags กับ q (ถ้ามี) เป็นอาเรย์เดียว<br/><br/>
+          <code>{...allData[idx], ...data}</code><br/>
+          ใช้กับ Object — รวมข้อมูลเก่ากับข้อมูลใหม่ ค่าใหม่ทับค่าเก่าถ้าชื่อซ้ำกัน
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+
+<!-- ====== SECTION 4 ====== -->
+<div class="section" id="s4">
+  <div class="section-header">
+    <span class="section-icon">☁️</span>
+    <div>
+      <div class="section-title">4. Supabase API — ฐานข้อมูล Cloud</div>
+      <div class="section-sub">เว็บนี้ไม่มีฐานข้อมูลในเครื่อง — ข้อมูลอยู่บน Supabase</div>
+    </div>
+  </div>
+  <div class="section-body">
+
+    <div class="flow">
+      <div class="flow-box ui">หน้าเว็บ<br/>(Browser)</div>
+      <span class="flow-arrow">→ fetch() →</span>
+      <div class="flow-box fn">Supabase<br/>REST API</div>
+      <span class="flow-arrow">→ JSON →</span>
+      <div class="flow-box db">PostgreSQL<br/>Database</div>
+    </div>
+
+    <div class="code-block">
+<span class="code-line c-comment">/* ตั้งค่าการเชื่อมต่อ */</span>
+<span class="code-line"><span class="c-key">const</span> SUPABASE_URL = <span class="c-str">'https://hrekxmmkwfwhsuaphwlz.supabase.co'</span>;</span>
+<span class="code-line"><span class="c-key">const</span> SUPABASE_KEY = <span class="c-str">'eyJ...'</span>; <span class="c-comment">// API Key สำหรับยืนยันตัวตน</span></span>
+<span class="code-line"></span>
+<span class="code-line c-comment">/* ฟังก์ชัน Helper — ห่อ fetch ให้ใส่ Header อัตโนมัติ */</span>
+<span class="code-line"><span class="c-key">const</span> <span class="c-fn">api</span> = (path, opts = {}) =></span>
+<span class="code-line">  <span class="c-fn">fetch</span>(<span class="c-str">`${SUPABASE_URL}/rest/v1/${path}`</span>, {</span>
+<span class="code-line">    headers: {</span>
+<span class="code-line">      <span class="c-str">'apikey'</span>: SUPABASE_KEY,         <span class="c-comment">// รหัสเข้าถึง API</span></span>
+<span class="code-line">      <span class="c-str">'Authorization'</span>: <span class="c-str">`Bearer ${SUPABASE_KEY}`</span>, <span class="c-comment">// ยืนยันตัวตน</span></span>
+<span class="code-line">      <span class="c-str">'Content-Type'</span>: <span class="c-str">'application/json'</span>, <span class="c-comment">// บอกว่าส่ง JSON</span></span>
+<span class="code-line">      <span class="c-str">'Prefer'</span>: <span class="c-str">'return=representation'</span>,  <span class="c-comment">// ขอให้ API คืนข้อมูลที่บันทึกกลับมา</span></span>
+<span class="code-line">      ...opts.headers  <span class="c-comment">// รวม header เพิ่มเติมที่ส่งมา (ถ้ามี)</span></span>
+<span class="code-line">    },</span>
+<span class="code-line">    ...opts  <span class="c-comment">// รวม options อื่น เช่น method, body</span></span>
+<span class="code-line">  });</span>
+    </div>
+
+    <table class="term-table">
+      <tr><th>HTTP Method</th><th>ใช้ทำอะไร</th><th>ใช้ที่ไหน</th></tr>
+      <tr>
+        <td><code>GET</code> (default)</td>
+        <td>ดึงข้อมูล</td>
+        <td><code>api('orders?select=*&order=id.asc')</code> — โหลดทุก SO</td>
+      </tr>
+      <tr>
+        <td><code>POST</code></td>
+        <td>สร้างข้อมูลใหม่</td>
+        <td><code>api('orders', { method:'POST', body: JSON.stringify(data) })</code> — เพิ่ม SO</td>
+      </tr>
+      <tr>
+        <td><code>PATCH</code></td>
+        <td>แก้ไขข้อมูลบางส่วน</td>
+        <td><code>api('orders?id=eq.5', { method:'PATCH', body: ... })</code> — แก้ SO id=5</td>
+      </tr>
+      <tr>
+        <td><code>DELETE</code></td>
+        <td>ลบข้อมูล</td>
+        <td><code>api('orders?id=eq.5', { method:'DELETE' })</code> — ลบ SO id=5</td>
+      </tr>
+    </table>
+
+    <div class="callout warn">
+      <span class="callout-icon">⚠️</span>
+      <div><strong>JSON.stringify(data)</strong> — แปลง JS Object เป็น JSON string ก่อนส่ง API<br/>
+      <strong>res.json()</strong> — แปลง JSON string ที่ได้รับกลับมาเป็น JS Object<br/>
+      ทั้งสองต้องใช้คู่กันเสมอ</div>
+    </div>
+
+  </div>
+</div>
+
+
+<!-- ====== SECTION 5 ====== -->
+<div class="section" id="s5">
+  <div class="section-header">
+    <span class="section-icon">📊</span>
+    <div>
+      <div class="section-title">5. ไฟล์ index.html — อ่านทีละส่วน</div>
+      <div class="section-sub">หน้าหลัก Dashboard สำหรับดูข้อมูล</div>
+    </div>
+  </div>
+  <div class="section-body">
+
+    <div class="sub-section">
+      <div class="sub-title">ลำดับการทำงานตั้งแต่เปิดหน้าเว็บ</div>
+      <div class="flow" style="flex-direction:column; align-items:flex-start; gap:8px;">
+        <div class="flow-box">1. Browser โหลด HTML+CSS+JS</div>
+        <span class="flow-arrow">↓</span>
+        <div class="flow-box fn">2. JS บรรทัดสุดท้าย: <code>loadData()</code> ถูกเรียก</div>
+        <span class="flow-arrow">↓</span>
+        <div class="flow-box db">3. ดึงข้อมูลจาก Supabase</div>
+        <span class="flow-arrow">↓</span>
+        <div class="flow-box fn">4. <code>computeFields()</code> คำนวณ Amount, กำไร, ตปท.</div>
+        <span class="flow-arrow">↓</span>
+        <div class="flow-box fn">5. <code>renderSummary()</code> วาด KPI Cards</div>
+        <span class="flow-arrow">↓</span>
+        <div class="flow-box fn">6. <code>renderTable()</code> วาดตารางทั้งหมด</div>
+        <span class="flow-arrow">↓</span>
+        <div class="flow-box ui">7. ผู้ใช้เห็นข้อมูล!</div>
+      </div>
+    </div>
+
+    <hr class="divider"/>
+
+    <div class="sub-section">
+      <div class="sub-title">computeFields() — คำนวณค่าที่ไม่ได้เก็บใน Database</div>
+      <div class="code-block">
+<span class="code-line"><span class="c-key">function</span> <span class="c-fn">computeFields</span>() {</span>
+<span class="code-line">  raw.<span class="c-fn">forEach</span>(r => {</span>
+<span class="code-line">    r.saleAmt    = r.salePrice * r.order;   <span class="c-comment">// Amount = ราคา × จำนวน</span></span>
+<span class="code-line">    r.depositVal = r.salePrice * r.deposit; <span class="c-comment">// มูลค่ารอ INV. = ราคา × รอ INV.</span></span>
+<span class="code-line">    r.remain     = <span class="c-fn">Math.max</span>(r.order - r.deposit - r.inv, <span class="c-num">0</span>);</span>
+<span class="code-line">    <span class="c-comment">// ตปท. = คำสั่ง - รอ INV. - INV.แล้ว (ไม่ติดลบ)</span></span>
+<span class="code-line">    r.costAmt    = r.costPrice != <span class="c-key">null</span> ? r.costPrice * r.order : <span class="c-key">null</span>;</span>
+<span class="code-line">    r.profit     = r.costAmt   != <span class="c-key">null</span> ? r.saleAmt - r.costAmt : <span class="c-key">null</span>;</span>
+<span class="code-line">  });</span>
+<span class="code-line">}</span>
+      </div>
+    </div>
+
+    <hr class="divider"/>
+
+    <div class="sub-section">
+      <div class="sub-title">getStatus() — ตัดสินสถานะแต่ละ SO</div>
+      <div class="code-block">
+<span class="code-line"><span class="c-key">function</span> <span class="c-fn">getStatus</span>(r) {</span>
+<span class="code-line">  <span class="c-key">if</span> (r.stored > <span class="c-num">1</span>)                    <span class="c-key">return</span> <span class="c-str">'stored_many'</span>; <span class="c-comment">// ฝากของ > 1 → สีเหลือง</span></span>
+<span class="code-line">  <span class="c-key">if</span> (r.stored > <span class="c-num">0</span>)                    <span class="c-key">return</span> <span class="c-str">'ready'</span>;       <span class="c-comment">// ฝากของ 1 → พร้อมส่งปกติ</span></span>
+<span class="code-line">  <span class="c-key">if</span> (r.deposit === <span class="c-num">0</span> && r.remain > <span class="c-num">0</span>) <span class="c-key">return</span> <span class="c-str">'abroad'</span>;      <span class="c-comment">// ยังสั่งตปท.อยู่</span></span>
+<span class="code-line">  <span class="c-key">if</span> (r.deposit > <span class="c-num">0</span>)                   <span class="c-key">return</span> <span class="c-str">'ready'</span>;       <span class="c-comment">// รอ INV. → พร้อมส่ง</span></span>
+<span class="code-line">  <span class="c-key">return</span> <span class="c-str">'partial'</span>;                                        <span class="c-comment">// ไม่ตรงเงื่อนไขใดเลย</span></span>
+<span class="code-line">}</span>
+<span class="code-line c-comment">// JavaScript อ่าน if จากบนลงล่าง ถ้าตรงข้อแรก return ทันที ไม่เช็คข้อถัดไป</span></span>
+      </div>
+    </div>
+
+    <hr class="divider"/>
+
+    <div class="sub-section">
+      <div class="sub-title">renderTable() — วาดตารางใหม่ทุกครั้งที่ข้อมูลเปลี่ยน</div>
+      <div class="code-block">
+<span class="code-line"><span class="c-key">function</span> <span class="c-fn">renderTable</span>() {</span>
+<span class="code-line">  <span class="c-comment">// 1. อ่านค่า filter ปัจจุบัน</span></span>
+<span class="code-line">  <span class="c-key">const</span> q      = document.<span class="c-fn">getElementById</span>(<span class="c-str">'searchInput'</span>).value.trim().<span class="c-fn">toLowerCase</span>();</span>
+<span class="code-line">  <span class="c-key">const</span> fSt    = document.<span class="c-fn">getElementById</span>(<span class="c-str">'filterStatus'</span>).value;</span>
+<span class="code-line">  <span class="c-key">const</span> fSales = document.<span class="c-fn">getElementById</span>(<span class="c-str">'filterSales'</span>).value;</span>
+<span class="code-line"></span>
+<span class="code-line">  <span class="c-comment">// 2. กรองข้อมูล</span></span>
+<span class="code-line">  <span class="c-key">let</span> filtered = raw.<span class="c-fn">filter</span>(r => {</span>
+<span class="code-line">    <span class="c-key">const</span> allTags = [...searchTags, ...(q ? [q] : [])]; <span class="c-comment">// รวม tag + คำที่กำลังพิมพ์</span></span>
+<span class="code-line">    <span class="c-key">const</span> matchSearch = allTags.<span class="c-fn">every</span>(t =>             <span class="c-comment">// ต้องตรงทุก tag</span></span>
+<span class="code-line">      r.so.<span class="c-fn">toLowerCase</span>().<span class="c-fn">includes</span>(t) || r.item.<span class="c-fn">toLowerCase</span>().<span class="c-fn">includes</span>(t));</span>
+<span class="code-line">    <span class="c-key">const</span> matchStatus = !fSt    || <span class="c-fn">getStatus</span>(r) === fSt; <span class="c-comment">// !fSt = ไม่ได้เลือก filter</span></span>
+<span class="code-line">    <span class="c-key">const</span> matchSales  = !fSales || r.salesco === fSales;</span>
+<span class="code-line">    <span class="c-key">return</span> matchSearch && matchStatus && matchSales;       <span class="c-comment">// ต้องผ่านทุกเงื่อนไข</span></span>
+<span class="code-line">  });</span>
+<span class="code-line"></span>
+<span class="code-line">  <span class="c-comment">// 3. Sort</span></span>
+<span class="code-line">  filtered.<span class="c-fn">sort</span>((a, b) => {</span>
+<span class="code-line">    <span class="c-key">let</span> va = a[sortCol], vb = b[sortCol];  <span class="c-comment">// va, vb = ค่าของคอลัมน์ที่ sort</span></span>
+<span class="code-line">    <span class="c-key">if</span> (<span class="c-key">typeof</span> va === <span class="c-str">'string'</span>) <span class="c-key">return</span> va.<span class="c-fn">localeCompare</span>(vb, <span class="c-str">'th'</span>) * sortDir;</span>
+<span class="code-line">    <span class="c-key">return</span> (va - vb) * sortDir;  <span class="c-comment">// sortDir = 1 (น้อย→มาก), -1 (มาก→น้อย)</span></span>
+<span class="code-line">  });</span>
+<span class="code-line"></span>
+<span class="code-line">  <span class="c-comment">// 4. สร้าง HTML แถวทั้งหมดแล้วใส่ใน tableBody</span></span>
+<span class="code-line">  document.<span class="c-fn">getElementById</span>(<span class="c-str">'tableBody'</span>).innerHTML = filtered.<span class="c-fn">map</span>((r, i) => {</span>
+<span class="code-line">    <span class="c-comment">// สร้าง HTML string ของแต่ละแถว</span></span>
+<span class="code-line">    <span class="c-key">return</span> <span class="c-str">`&lt;tr data-id="${r.id}"&gt;...&lt;/tr&gt;`</span>;</span>
+<span class="code-line">  }).<span class="c-fn">join</span>(<span class="c-str">''</span>); <span class="c-comment">// รวมทุกแถวเป็น string เดียว</span></span>
+<span class="code-line">}</span>
+      </div>
+    </div>
+
+    <hr class="divider"/>
+
+    <div class="sub-section">
+      <div class="sub-title">fmt() และ fmtMoney() — ฟังก์ชันจัดรูปแบบตัวเลข</div>
+      <div class="code-block">
+<span class="code-line"><span class="c-key">function</span> <span class="c-fn">fmt</span>(n) {</span>
+<span class="code-line">  <span class="c-key">return</span> (n != <span class="c-key">null</span> && n !== <span class="c-num">0</span>) ? n.<span class="c-fn">toLocaleString</span>(<span class="c-str">'th-TH'</span>) : <span class="c-str">'-'</span>;</span>
+<span class="code-line">  <span class="c-comment">// toLocaleString('th-TH') = 1000 → "1,000" แบบไทย</span></span>
+<span class="code-line">  <span class="c-comment">// ถ้าค่าเป็น 0 หรือ null คืน '-' แทน</span></span>
+<span class="code-line">}</span>
+<span class="code-line"></span>
+<span class="code-line"><span class="c-key">function</span> <span class="c-fn">fmtMoney</span>(n) {</span>
+<span class="code-line">  <span class="c-key">if</span> (n == <span class="c-key">null</span> || n === <span class="c-num">0</span>) <span class="c-key">return</span> <span class="c-str">'&lt;span class="dim"&gt;-&lt;/span&gt;'</span>;</span>
+<span class="code-line">  <span class="c-key">return</span> n.<span class="c-fn">toLocaleString</span>(<span class="c-str">'th-TH'</span>, { minimumFractionDigits:<span class="c-num">2</span>, maximumFractionDigits:<span class="c-num">2</span> });</span>
+<span class="code-line">  <span class="c-comment">// 1500.5 → "1,500.50" มีทศนิยม 2 ตำแหน่งเสมอ</span></span>
+<span class="code-line">}</span>
+      </div>
+    </div>
+
+    <hr class="divider"/>
+
+    <div class="sub-section">
+      <div class="sub-title">applyColVisibility() — ซ่อน/แสดงคอลัมน์</div>
+      <div class="code-block">
+<span class="code-line"><span class="c-key">function</span> <span class="c-fn">applyColVisibility</span>() {</span>
+<span class="code-line">  <span class="c-comment">// 1. ปุ่มซ่อน — ถ้าคอลัมน์ถูกซ่อน ปุ่มจะเป็นสีแดง</span></span>
+<span class="code-line">  document.<span class="c-fn">querySelectorAll</span>(<span class="c-str">'.col-btn'</span>).<span class="c-fn">forEach</span>(btn =></span>
+<span class="code-line">    btn.<span class="c-key">classList</span>.<span class="c-fn">toggle</span>(<span class="c-str">'hidden-col'</span>, hiddenCols.<span class="c-fn">has</span>(btn.dataset.col))</span>
+<span class="code-line">  );</span>
+<span class="code-line">  <span class="c-comment">// 2. ซ่อน th (หัวตาราง) ที่ data-th ตรงกัน</span></span>
+<span class="code-line">  document.<span class="c-fn">querySelectorAll</span>(<span class="c-str">'thead th[data-th]'</span>).<span class="c-fn">forEach</span>(th =></span>
+<span class="code-line">    th.style.display = hiddenCols.<span class="c-fn">has</span>(th.dataset.th) ? <span class="c-str">'none'</span> : <span class="c-str">''</span></span>
+<span class="code-line">  );</span>
+<span class="code-line">  <span class="c-comment">// 3. ซ่อน td ในตัวตารางด้วย</span></span>
+<span class="code-line">  document.<span class="c-fn">querySelectorAll</span>(<span class="c-str">'tbody td[data-td], tfoot td[data-td]'</span>).<span class="c-fn">forEach</span>(td =></span>
+<span class="code-line">    td.style.display = hiddenCols.<span class="c-fn">has</span>(td.dataset.td) ? <span class="c-str">'none'</span> : <span class="c-str">''</span></span>
+<span class="code-line">  );</span>
+<span class="code-line">}</span>
+<span class="code-line c-comment">// ทำไมต้องซ่อนทั้ง th และ td? เพราะถ้าซ่อนแค่ th หัวตารางหาย แต่ช่องข้อมูลยังอยู่</span></span>
+      </div>
+    </div>
+
+    <hr class="divider"/>
+
+    <div class="sub-section">
+      <div class="sub-title">Login ใน admin.html — sessionStorage</div>
+      <div class="code-block">
+<span class="code-line"><span class="c-key">const</span> PASSWORD = <span class="c-str">'admin.ppcy'</span>;</span>
+<span class="code-line"><span class="c-key">const</span> SESSION_KEY = <span class="c-str">'ap_admin_auth'</span>;</span>
+<span class="code-line"></span>
+<span class="code-line"><span class="c-key">function</span> <span class="c-fn">checkSession</span>() {</span>
+<span class="code-line">  <span class="c-key">return</span> sessionStorage.<span class="c-fn">getItem</span>(SESSION_KEY) === <span class="c-str">'1'</span>;</span>
+<span class="code-line">  <span class="c-comment">// sessionStorage = เก็บข้อมูลใน Browser ชั่วคราว (หายเมื่อปิด Tab)</span></span>
+<span class="code-line">}</span>
+<span class="code-line"><span class="c-key">function</span> <span class="c-fn">unlockAdmin</span>() {</span>
+<span class="code-line">  sessionStorage.<span class="c-fn">setItem</span>(SESSION_KEY, <span class="c-str">'1'</span>); <span class="c-comment">// บันทึกว่า Login แล้ว</span></span>
+<span class="code-line">  document.<span class="c-fn">getElementById</span>(<span class="c-str">'loginScreen'</span>).<span class="c-key">classList</span>.<span class="c-fn">add</span>(<span class="c-str">'hidden'</span>);</span>
+<span class="code-line">  <span class="c-fn">loadData</span>(); <span class="c-comment">// โหลดข้อมูลหลัง Login สำเร็จ</span></span>
+<span class="code-line">}</span>
+<span class="code-line"></span>
+<span class="code-line c-comment">/* ตรวจเมื่อโหลดหน้า */</span>
+<span class="code-line"><span class="c-key">if</span> (<span class="c-fn">checkSession</span>()) {</span>
+<span class="code-line">  <span class="c-comment">// เคย Login แล้วในเซสชันนี้ → ข้ามหน้า Login</span></span>
+<span class="code-line">  document.<span class="c-fn">getElementById</span>(<span class="c-str">'loginScreen'</span>).<span class="c-key">classList</span>.<span class="c-fn">add</span>(<span class="c-str">'hidden'</span>);</span>
+<span class="code-line">  <span class="c-fn">loadData</span>();</span>
+<span class="code-line">} <span class="c-key">else</span> {</span>
+<span class="code-line">  <span class="c-comment">// ยังไม่ Login → ซ่อน Loading แสดงหน้า Login</span></span>
+<span class="code-line">  document.<span class="c-fn">getElementById</span>(<span class="c-str">'loadingOverlay'</span>).<span class="c-key">classList</span>.<span class="c-fn">add</span>(<span class="c-str">'hidden'</span>);</span>
+<span class="code-line">  <span class="c-fn">setTimeout</span>(() => document.<span class="c-fn">getElementById</span>(<span class="c-str">'loginInput'</span>).<span class="c-fn">focus</span>(), <span class="c-num">100</span>);</span>
+<span class="code-line">  <span class="c-comment">// setTimeout(fn, 100) = รอ 100ms แล้วค่อยโฟกัสช่อง Input</span></span>
+<span class="code-line">}</span>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+
+<!-- ====== SECTION 7 ====== -->
+<div class="section" id="s7">
+  <div class="section-header">
+    <span class="section-icon">🗺️</span>
+    <div>
+      <div class="section-title">7. สรุปภาพรวม — ข้อมูลไหลยังไง?</div>
+      <div class="section-sub">ทุกอย่างเชื่อมกันอย่างไร</div>
+    </div>
+  </div>
+  <div class="section-body">
+
+    <table class="term-table">
+      <tr><th>ผู้ใช้ทำ</th><th>JS เรียก</th><th>ผลที่เกิด</th></tr>
+      <tr>
+        <td>เปิดหน้า index.html</td>
+        <td><code>loadData()</code> → <code>computeFields()</code> → <code>renderSummary()</code> + <code>renderTable()</code></td>
+        <td>ดึงข้อมูลจาก Supabase แล้ววาดทุกอย่าง</td>
+      </tr>
+      <tr>
+        <td>พิมพ์ในช่องค้นหา</td>
+        <td><code>renderTable()</code></td>
+        <td>วาดตารางใหม่ กรองเฉพาะที่ตรง</td>
+      </tr>
+      <tr>
+        <td>กดหัวคอลัมน์</td>
+        <td>เปลี่ยน sortCol/sortDir → <code>renderTable()</code></td>
+        <td>เรียงลำดับตามคอลัมน์นั้น</td>
+      </tr>
+      <tr>
+        <td>เช็ค Checkbox แถว</td>
+        <td>เพิ่ม id เข้า <code>selectedRows</code> → <code>updateSelectedFooter()</code></td>
+        <td>แถวเปลี่ยนสีฟ้า Footer ล่างแสดงยอดรวม</td>
+      </tr>
+      <tr>
+        <td>กดปุ่ม ซ่อน คอลัมน์</td>
+        <td>เพิ่ม/ลบออกจาก <code>hiddenCols</code> → <code>renderTable()</code></td>
+        <td>คอลัมน์หาย/กลับมา</td>
+      </tr>
+      <tr>
+        <td>เปิด admin.html แล้ว Login</td>
+        <td><code>unlockAdmin()</code> → <code>loadData()</code></td>
+        <td>บันทึก session, โหลดข้อมูล</td>
+      </tr>
+      <tr>
+        <td>กดปุ่ม "เพิ่มรายการ"</td>
+        <td><code>readForm()</code> → <code>api(POST)</code> → <code>renderTable()</code></td>
+        <td>ส่งข้อมูลไป Supabase, อัปเดตตารางทันที</td>
+      </tr>
+      <tr>
+        <td>กดปุ่ม "แก้ไข"</td>
+        <td><code>openEdit(id)</code> → แสดง Modal</td>
+        <td>เปิดหน้าต่างแก้ไข</td>
+      </tr>
+      <tr>
+        <td>กด "บันทึก" ใน Modal</td>
+        <td><code>api(PATCH)</code> → <code>closeModal()</code> → <code>renderTable()</code></td>
+        <td>บันทึกลง Supabase, ปิด Modal, อัปเดตตาราง</td>
+      </tr>
+      <tr>
+        <td>กด 🗑️ ลบ</td>
+        <td><code>confirmDelete()</code> → แสดง Dialog ยืนยัน</td>
+        <td>รอให้กด "ลบเลย" ก่อนถึงจะลบจริง</td>
+      </tr>
+    </table>
+
+    <div class="callout tip">
+      <span class="callout-icon">🎯</span>
+      <div>
+        <strong>หลักการสำคัญที่ควรจำ:</strong><br/>
+        ข้อมูลจริงอยู่ใน <strong>Supabase</strong> — เว็บแค่ดึงมาแสดง<br/>
+        <code>raw</code> = ข้อมูลทั้งหมดในหน่วยความจำ — <code>filtered</code> = ที่กรองแล้ว<br/>
+        ทุกครั้งที่ filter/sort เปลี่ยน → เรียก <code>renderTable()</code> ใหม่เสมอ<br/>
+        <code>classList.add('hidden')</code> / <code>.remove('hidden')</code> = วิธีซ่อน-แสดงที่ใช้ทุกที่
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- FOOTER -->
+<div style="text-align:center; padding: 2rem 0; color: #8a94a8; font-size:14px; font-weight:600;">
+  📘 คู่มืออธิบายโค้ด — ALL POWER Group Dashboard · สร้างสำหรับผู้เริ่มหัดเขียนโค้ด
+</div>
+
+</body>
+</html>
