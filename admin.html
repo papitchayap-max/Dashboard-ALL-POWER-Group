@@ -30,7 +30,7 @@ body{
   background:#dce8f5;
   background-image:radial-gradient(circle,rgba(37,99,168,0.06) 1px,transparent 1px);
   background-size:28px 28px;
-  color:var(--text);padding:1.5rem 2rem;font-size:16px;min-height:100vh;
+  color:var(--text);padding:1.5rem 2rem;font-size:18px;min-height:100vh;
 }
 
 /* LOADING */
@@ -61,15 +61,33 @@ body{
 .page-header{display:flex;align-items:center;gap:16px;margin-bottom:1.5rem}
 .page-title{font-size:24px;font-weight:800;color:var(--navy)}
 .page-subtitle{font-size:15px;color:var(--gray-400);font-weight:500;margin-top:2px}
+
+.btn-group {
+  display: flex;
+  gap: 10px; /* ระยะห่างระหว่างปุ่ม */
+  margin-left: auto;/* ชิดขวา */
+}
 .btn-back{
-  margin-left:auto;font-family:'Sarabun',sans-serif;
+  margin-left:0;font-family:'Sarabun',sans-serif;
   font-size:15px;font-weight:700;padding:9px 20px;border-radius:8px;border:none;
   background:var(--gray-100);color:var(--navy);cursor:pointer;
   text-decoration:none;display:inline-flex;align-items:center;gap:6px;
   transition:all 0.15s;
 }
 .btn-back:hover{background:var(--gray-200)}
-
+.btn-read {
+  margin-left: 0;
+  font-family: 'Sarabun', sans-serif;
+  font-size: 15px; font-weight: 700;
+  padding: 9px 20px; border-radius: 8px;
+  border: none;
+  background: linear-gradient(135deg, var(--blue), var(--navy));
+  color: #fff; cursor: pointer;
+  box-shadow: 0 2px 8px rgba(37,99,168,0.3);
+  transition: all 0.15s;
+  text-decoration: none; display: inline-flex; align-items: center; gap: 6px;
+}
+.btn-read:hover { opacity: 0.88; transform: translateY(-1px); }
 /* CARD */
 .card{background:var(--white);border-radius:14px;box-shadow:var(--shadow-lg);margin-bottom:1.5rem;overflow:hidden}
 .card-header{
@@ -130,11 +148,11 @@ body{
 
 /* TABLE */
 .tbl-wrap{overflow-x:auto}
-table{width:100%;border-collapse:collapse;font-size:14px}
+table{width:100%;border-collapse:collapse;font-size:15px}
 thead th{
   background:var(--navy);color:#fff;font-weight:700;
   padding:11px 12px;text-align:left;white-space:nowrap;
-  border-bottom:2px solid var(--blue);font-size:14px;
+  border-bottom:2px solid var(--blue);font-size:15px;
   position:sticky;top:0;z-index:2;
 }
 thead th.right{text-align:right}
@@ -142,7 +160,7 @@ thead th.center{text-align:center}
 tbody tr{border-bottom:1px solid var(--gray-100);transition:background 0.1s}
 tbody tr:last-child{border-bottom:none}
 tbody tr:hover{background:#eef4fc}
-td{padding:9px 12px;vertical-align:middle;white-space:nowrap;font-weight:600;font-size:14px}
+td{padding:9px 12px;vertical-align:middle;white-space:nowrap;font-weight:600;font-size:15px}
 td.right{text-align:right}
 td.center{text-align:center}
 td.so-cell{font-weight:800;color:var(--navy)}
@@ -323,13 +341,16 @@ td.item-cell{color:var(--navy)}
     <div class="page-title">⚙️ จัดการข้อมูล</div>
     <div class="page-subtitle">เพิ่ม / แก้ไข / ลบ Sales Orders</div>
   </div>
-  <a href="index.html" class="btn-back">← กลับ Dashboard</a>
+  <div class="btn-group">
+  <a href="index.html" class="btn-back">กลับ Dashboard</a>
+  <a href="code-notes.html" class="btn-read">คู่มือ</a>
+</div>
 </div>
 
 <!-- ADD FORM -->
 <div class="card">
   <div class="card-header">
-    <div class="card-title">➕ เพิ่มรายการใหม่</div>
+    <div class="card-title">เพิ่มรายการใหม่</div>
   </div>
   <div class="card-body">
     <div class="form-grid" id="addForm">
@@ -351,7 +372,7 @@ td.item-cell{color:var(--navy)}
         <span class="form-hint">ไม่กรอกได้ถ้าไม่มีข้อมูล</span>
       </div>
       <div class="form-group">
-        <label>QTY. รวม *</label>
+        <label>QTY. *</label>
         <input type="number" id="f_qty" placeholder="0" min="0"/>
       </div>
       <div class="form-group">
@@ -376,12 +397,12 @@ td.item-cell{color:var(--navy)}
         </select>
       </div>
       <div class="form-group">
-        <label>หมายเหตุ / Update</label>
+        <label>หมายเหตุ </label>
         <input type="text" id="f_update_note" placeholder="หมายเหตุ (ถ้ามี)"/>
       </div>
     </div>
     <div class="form-actions">
-      <button class="btn btn-primary" id="btnAdd">➕ เพิ่มรายการ</button>
+      <button class="btn btn-primary" id="btnAdd">เพิ่มรายการ</button>
       <button class="btn btn-secondary" id="btnClear">ล้างฟอร์ม</button>
     </div>
   </div>
@@ -416,7 +437,7 @@ td.item-cell{color:var(--navy)}
           <th class="right">Unit Price</th>
           <th class="right">QTY.</th>
           <th class="right">รอ INV.</th>
-          <th class="right">INV.</th>
+          <th class="right">INV. แล้ว</th>
           <th class="right">ฝากของ</th>
           <th>Sales Co.</th>
           <th>หมายเหตุ</th>
